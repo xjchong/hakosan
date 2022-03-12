@@ -48,6 +48,19 @@ func place_piece(type, position = get_mouse_to_board_position()):
 	return 0
 
 
+func remove_piece(position = get_mouse_to_board_position()):
+	if not is_position_occupied(position):
+		return null
+
+	var piece = board[position.x][position.y]
+	var value = piece.value
+
+	board[position.x][position.y] = null
+	piece.queue_free()
+
+	return value
+
+
 func is_position_occupied(position):
 	return board[position.x][position.y] != null
 
@@ -74,7 +87,7 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 	elif position == Vector2.ZERO:
 		return 'store'
 	elif piece.type == 'hammer' && is_position_occupied(position):
-		return 'hammer'
+		return 'remove'
 	elif not is_position_occupied(position):
 		return 'place'
 	else:

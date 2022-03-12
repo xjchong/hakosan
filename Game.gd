@@ -28,13 +28,21 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT and not event.pressed:
 			var action_type = board.get_action_type(current_piece)
 
-			if action_type == 'place':
-				var score_delta = board.place_piece(current_piece.type)
+			match action_type:
+				'place':
+					var value = board.place_piece(current_piece.type)
 
-				if score_delta != null:
-					score += score_delta
-					current_piece.queue_free()
-					current_piece = get_next_piece()
+					if value != null:
+						score += value
+						current_piece.queue_free()
+						current_piece = get_next_piece()
+				'remove':
+					var value = board.remove_piece()
+
+					if value != null:
+						score -= value
+						current_piece.queue_free()
+						current_piece = get_next_piece()
 
 
 func get_next_piece():
