@@ -4,6 +4,7 @@ extends Node2D
 onready var label = $Label
 onready var highlight_rect = $HighlightRect
 var type = 'unknown'
+var is_super = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -11,8 +12,9 @@ func _ready():
 	pass
 
 
-func set_type(new_type):
+func set_type(new_type, new_is_super = false):
 	type = new_type
+	is_super = new_is_super
 	set_label()
 
 
@@ -22,6 +24,14 @@ func highlight():
 
 func unhighlight():
 	highlight_rect.visible = false
+
+
+func pulse_on(towards_position):
+	highlight_rect.visible = true
+
+
+func pulse_off():
+	highlight_rect.visible = false
 	
 	
 func set_label():
@@ -29,19 +39,23 @@ func set_label():
 
 
 func get_value():
-	match type:
-		'grass': return 5
-		'bush': return 20
-		'tree': return 100
-		'bonfire': return 500
-		'camp': return 1500
-		'house': return 5000
-		'mansion': return 20000
-		'tower': return 100000
-		'castle': return 500000
-		'rock': return 0
-		'mine': return 1000
-		'gold': return 10000
-		'treasure': return 50000
-		_: return 0
+	var modifier = 2 if is_super else 1
+	var value_for_type = {
+		'grass': 5,
+		'bush': 20,
+		'tree': 100,
+		'bonfire': 500,
+		'camp': 1500,
+		'house': 5000,
+		'mansion': 20000,
+		'tower': 100000,
+		'castle': 500000,
+		'rock': 0,
+		'mine': 1000,
+		'gold': 10000,
+		'treasure': 50000,
+	}
+
+	return modifier * value_for_type.get(type, 0)
+
 		

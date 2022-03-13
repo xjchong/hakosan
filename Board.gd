@@ -12,6 +12,8 @@ const PIECE_OFFSET = Vector2(int(PIECE_SIZE / 2), int(PIECE_SIZE / 2))
 
 var board = []
 var stored_piece = null
+var hover_position = null
+var hover_piece_type = null
 
 func _ready():
 	background.set_size(Vector2(PIECE_SIZE * COLUMNS, PIECE_SIZE * ROWS))
@@ -38,14 +40,30 @@ func place_piece(type, position = get_mouse_to_board_position()):
 	if is_position_occupied(position) or type == null:
 		return null
 
-	var piece = Piece.instance()
-	add_child(piece)
-	piece.set_type(type)
-	piece.position = Vector2(position.x * PIECE_SIZE, position.y * PIECE_SIZE) + PIECE_OFFSET
+	var meld = get_meld(type, position)
 
-	board[position.x][position.y] = piece
+	if meld[0] == type:
+		var piece = Piece.instance()
+		add_child(piece)
+		piece.set_type(type)
+		piece.position = Vector2(position.x * PIECE_SIZE, position.y * PIECE_SIZE) + PIECE_OFFSET
+		board[position.x][position.y] = piece
 
-	return 0
+		return 0
+	else: 
+		for meld_position in meld[1]:
+			if meld_position != position:
+				var meld_piece = board[meld_position.x][meld_position.y]
+				meld_piece.queue_free()
+				board[meld_position.x][meld_position.y] = null
+			
+		var piece = Piece.instance()
+		add_child(piece)
+		piece.set_type(meld[0])
+		piece.position = Vector2(position.x * PIECE_SIZE, position.y * PIECE_SIZE) + PIECE_OFFSET
+		board[position.x][position.y] = piece
+
+		return piece.get_value()
 
 
 func store_piece(type): 
@@ -110,12 +128,83 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 
 
 func hover_piece(piece, position = get_mouse_to_board_position()):
+	if piece.type == hover_piece_type and position == hover_position:
+		return
+
+	hover_piece_type = piece.type
+	hover_position = position
+
+	reset_pulse()
+
 	piece.highlight()
 	piece.position = Vector2(
 		position.x * PIECE_SIZE,
 		position.y * PIECE_SIZE
 	) + PIECE_OFFSET + self.position
 
+	var meld = get_meld(piece.type, position)
+
+	for meld_position in meld[1]:
+		if meld_position != position:
+			var meld_piece = board[meld_position.x][meld_position.y]
+
+			meld_piece.pulse_on(piece.position)
+
+
+func reset_pulse():
+	for row in ROWS:
+		for col in COLUMNS:
+			var piece = board[row][col]
+
+			if piece != null:
+				piece.pulse_off()
+
+
+func get_group(type, position = get_mouse_to_board_position(), inside = [position]):
+	var neighbors = get_neighbors(position)
+
+	for neighbor in neighbors:
+		var piece = board[neighbor.x][neighbor.y]
+
+		if not neighbor in inside and piece != null and piece.type == type:
+			inside.append(neighbor)
+			get_group(type, neighbor, inside)
+
+	return inside
+
+
+func get_meld(type, position = get_mouse_to_board_position(), meld = []):
+	var group = get_group(type, position)
+	var upgrade = get_upgrade(type, group.size())
+
+	if upgrade == null:
+		return [type, meld]
+	else: 
+		# Note that the meld may contain duplicates of the origin position.
+		return get_meld(upgrade, position, meld + group)
+
+
+
+func get_neighbors(position):
+	if (position == Vector2.ZERO): 
+		return []
+
+	var neighbors = []
+
+	if position.x > 0:
+		neighbors.append(position + Vector2.LEFT)
+	
+	if position.y > 0:
+		neighbors.append(position + Vector2.UP)
+
+	if position.x < COLUMNS - 1:
+		neighbors.append(position + Vector2.RIGHT)
+
+	if position.y < ROWS - 1:
+		neighbors.append(position + Vector2.DOWN)
+
+	return neighbors
+	
 
 func get_starting_piece_type():
 	var roll = randf()
@@ -137,3 +226,28 @@ func get_starting_piece_type():
 
 	
 	return null
+
+
+func get_upgrade(type, quantity):
+	var upgrade_for_type = {
+		'grass': ['bush', 3],
+		'bush': ['tree', 3],
+		'tree': ['bonfire', 3],
+		'bonfire': ['camp', 3],
+		'camp': ['house', 3],
+		'house': ['mansion', 3],
+		'mansion': ['tower', 3],
+		'tower': ['castle', 4],
+		'rock': ['mine', 3],
+		'mine': ['treasure', 3],
+		'gold': ['treasure', 3],
+		'grave': ['ruins', 3],
+		'ruins': ['dungeon', 3],
+		'dungeon': ['treasure', 3]
+	}
+	var upgrade = upgrade_for_type.get(type, [null, 0])
+
+	if quantity >= upgrade[1]:
+		return upgrade[0]
+	else:
+		return null

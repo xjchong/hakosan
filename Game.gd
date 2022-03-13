@@ -8,7 +8,6 @@ const Piece = preload('res://Piece.tscn')
 var current_piece = null
 var score = 0
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	board.setup_pieces()
 	current_piece = set_next_piece()
