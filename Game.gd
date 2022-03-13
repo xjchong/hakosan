@@ -73,7 +73,7 @@ func get_next_piece_type():
 	chances.append(['tree', 0.03])
 	chances.append(['bonfire', 0.01])
 	chances.append(['crystal', 0.03])
-	chances.append(['hammer', 0.23])
+	chances.append(['hammer', 0.03])
 
 	for chance in chances:
 		chance_acc += chance[1]
