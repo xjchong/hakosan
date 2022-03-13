@@ -86,7 +86,7 @@ func remove_piece(position = get_mouse_to_board_position()):
 		return null
 
 	var piece = board[position.x][position.y]
-	var value = piece.value
+	var value = piece.get_value()
 
 	board[position.x][position.y] = null
 	piece.queue_free()
