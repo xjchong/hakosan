@@ -11,7 +11,7 @@ var score = 0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	board.setup_pieces()
-	current_piece = get_next_piece()
+	current_piece = set_next_piece()
 
 
 func _process(_delta):
@@ -35,18 +35,26 @@ func _input(event):
 					if value != null:
 						score += value
 						current_piece.queue_free()
-						current_piece = get_next_piece()
+						current_piece = set_next_piece()
 				'remove':
 					var value = board.remove_piece()
 
 					if value != null:
 						score -= value
 						current_piece.queue_free()
-						current_piece = get_next_piece()
+						current_piece = set_next_piece()
+				'store':
+					var stored_piece_type = board.store_piece(current_piece.type)
+					
+					current_piece.queue_free()
+
+					if stored_piece_type == null:
+						current_piece = set_next_piece()
+					else:
+						current_piece = set_next_piece(stored_piece_type)
 
 
-func get_next_piece():
-	var type = get_next_piece_type()
+func set_next_piece(type = get_next_piece_type()):
 	var piece = Piece.instance()
 	add_child(piece)
 	piece.set_type(type)

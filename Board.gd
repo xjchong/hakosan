@@ -29,7 +29,7 @@ func setup_pieces():
 	for x in COLUMNS:
 		for y in ROWS:
 			if x == 0 and y == 0:
-				place_piece('storage', Vector2(x, y))
+				place_piece('storage', Vector2.ZERO)
 			else: 
 				place_piece(get_starting_piece_type(), Vector2(x, y))
 
@@ -46,6 +46,21 @@ func place_piece(type, position = get_mouse_to_board_position()):
 	board[position.x][position.y] = piece
 
 	return 0
+
+
+func store_piece(type): 
+	var old_stored_piece_type = null
+
+	if stored_piece != null:
+		old_stored_piece_type = stored_piece.type
+		stored_piece.queue_free()
+
+	stored_piece = Piece.instance()
+	stored_piece.position = Vector2.ZERO + PIECE_OFFSET
+	add_child(stored_piece)
+	stored_piece.set_type(type)
+
+	return old_stored_piece_type
 
 
 func remove_piece(position = get_mouse_to_board_position()):
