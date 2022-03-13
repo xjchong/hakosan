@@ -121,7 +121,7 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 		return 'store'
 	elif piece.type == 'hammer' && is_position_occupied(position):
 		return 'remove'
-	elif not is_position_occupied(position):
+	elif not piece.type == 'hammer' and not is_position_occupied(position):
 		return 'place'
 	else:
 		return null
