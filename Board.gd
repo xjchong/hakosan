@@ -36,6 +36,8 @@ func setup_pieces():
 				place_piece('storage', STORAGE_POSITION)
 			else: 
 				place_piece(get_starting_piece_type(), Vector2(x, y))
+	
+	trap_slimes()
 
 
 func get_position_from_board_position(board_position):
@@ -241,6 +243,64 @@ func move_slimes():
 					board[neighbor.x][neighbor.y] = slime
 
 					slime.move(get_position_from_board_position(neighbor))
+
+
+func trap_slimes():
+	for y in ROWS:
+		for x in COLUMNS:
+			var piece = board[x][y]
+
+			if piece == null or piece.type != 'slime':
+				continue
+			
+			var group = get_group('slime', Vector2(x, y))
+			var is_group_trapped = true
+			
+			for slime_position in group:
+				var neighbors = get_neighbors(slime_position)
+
+				for neighbor in neighbors:
+					if board[neighbor.x][neighbor.y] == null:
+						is_group_trapped = false
+						break
+				
+				if not is_group_trapped:
+					break
+				
+			if is_group_trapped:
+				for slime_position in group:
+					var slime = board[slime_position.x][slime_position.y]
+
+					if slime != null:
+						slime.set_type('grave')
+
+
+func meld_graveyards():
+	var score = 0
+
+	for y in ROWS:
+		for x in COLUMNS:
+			var piece = board[x][y]
+
+			if piece == null or piece.type != 'grave':
+				continue
+			
+			var group = get_group('grave', Vector2(x, y))
+			var newest_grave = piece
+			var newest_grave_position = Vector2(x, y)
+
+			for grave_position in group:
+				var grave = board[grave_position.x][grave_position.y]
+
+				if grave != null and grave.type == 'grave' and grave.timestamp > newest_grave.timestamp:
+					newest_grave = grave
+					newest_grave_position = grave_position
+			
+			newest_grave.queue_free()
+			board[newest_grave_position.x][newest_grave_position.y] = null
+			score += place_piece('grave', newest_grave_position)
+	
+	return score
 
 
 func get_wildcard_type(position):

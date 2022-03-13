@@ -9,6 +9,7 @@ onready var tween_move = $TweenMove as Tween
 var type = 'unknown'
 var is_super = false
 var pulse_positions = null
+var timestamp = 0
 
 
 static func get_value_for_type(_type):
@@ -36,6 +37,7 @@ static func get_value_for_type(_type):
 
 
 func _ready():
+	timestamp = OS.get_ticks_msec()
 	tween.connect('tween_all_completed', self, 'play_tween_pulse')
 
 
