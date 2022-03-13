@@ -19,6 +19,7 @@ func _input(event):
 			if board.is_playable(current_piece):
 				board.hover_piece(current_piece)
 			else:
+				board.reset_hover()
 				current_piece.unhighlight()
 				current_piece.position = get_global_mouse_position()
 	elif event is InputEventMouseButton:

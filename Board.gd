@@ -138,10 +138,10 @@ func hover_piece(piece, position = get_mouse_to_board_position()):
 	if piece.type == hover_piece_type and position == hover_position:
 		return
 
+	reset_hover()
+
 	hover_piece_type = piece.type
 	hover_position = position
-
-	reset_pulse()
 
 	var meld = get_meld(piece.type, position)
 
@@ -152,13 +152,16 @@ func hover_piece(piece, position = get_mouse_to_board_position()):
 			meld_piece.pulse_on(piece.position)
 
 
-func reset_pulse():
+func reset_hover():
 	for row in ROWS:
 		for col in COLUMNS:
 			var piece = board[row][col]
 
 			if piece != null:
 				piece.pulse_off()
+	
+	hover_piece_type = null
+	hover_position = null
 
 
 func get_group(type, position = get_mouse_to_board_position(), inside = [position]):
