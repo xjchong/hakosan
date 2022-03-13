@@ -13,17 +13,15 @@ func _ready():
 	current_piece = set_next_piece()
 
 
-func _process(_delta):
-	if current_piece != null:
-		if board.is_playable(current_piece):
-			board.hover_piece(current_piece)
-		else:
-			current_piece.unhighlight()
-			current_piece.position = get_global_mouse_position()
-
-
 func _input(event):
-	if event is InputEventMouseButton:
+	if event is InputEventMouseMotion:
+		if current_piece != null:
+			if board.is_playable(current_piece):
+				board.hover_piece(current_piece)
+			else:
+				current_piece.unhighlight()
+				current_piece.position = get_global_mouse_position()
+	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and not event.pressed:
 			var action_type = board.get_action_type(current_piece)
 

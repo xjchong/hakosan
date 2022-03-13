@@ -128,6 +128,13 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 
 
 func hover_piece(piece, position = get_mouse_to_board_position()):
+	piece.highlight()
+	piece.position = Vector2(
+		position.x * PIECE_SIZE,
+		position.y * PIECE_SIZE
+	) + PIECE_OFFSET + self.position
+
+	# Don't want to retrigger pulsing of items.
 	if piece.type == hover_piece_type and position == hover_position:
 		return
 
@@ -135,12 +142,6 @@ func hover_piece(piece, position = get_mouse_to_board_position()):
 	hover_position = position
 
 	reset_pulse()
-
-	piece.highlight()
-	piece.position = Vector2(
-		position.x * PIECE_SIZE,
-		position.y * PIECE_SIZE
-	) + PIECE_OFFSET + self.position
 
 	var meld = get_meld(piece.type, position)
 
