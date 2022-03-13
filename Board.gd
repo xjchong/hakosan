@@ -4,6 +4,7 @@ extends Node2D
 onready var background = $Background as ColorRect
 
 const Piece = preload('res://Piece.tscn')
+const PieceCompanion = preload('res://Piece.gd')
 
 const ROWS = 6
 const COLUMNS = 6
@@ -64,6 +65,9 @@ func loot_piece(position = get_mouse_to_board_position()):
 func place_piece(type, position = get_mouse_to_board_position()):
 	if is_position_occupied(position) or type == null:
 		return null
+
+	if type == 'crystal':
+		type = get_wildcard_type(position)
 
 	var meld = get_meld(type, position)
 
@@ -180,7 +184,8 @@ func hover_piece(piece, position = get_mouse_to_board_position()):
 	hover_piece_type = piece.type
 	hover_position = position
 
-	var meld = get_meld(piece.type, position)
+	var type = get_wildcard_type(position) if piece.type == 'crystal' else piece.type
+	var meld = get_meld(type, position)
 
 	for meld_position in meld[1]:
 		if meld_position != position:
@@ -201,6 +206,37 @@ func reset_hover():
 	hover_position = null
 
 
+func get_wildcard_type(position):
+	var neighbors = get_neighbors(position)
+	var tried_types = []
+	var best_type = null
+	var best_meld_size = 0
+
+	for neighbor in neighbors:
+		var piece = board[neighbor.x][neighbor.y]
+
+		if piece == null:
+			continue
+		
+		if piece.type in tried_types:
+			continue
+		else:
+			tried_types.append(piece.type)
+
+		var meld = get_meld(piece.type, position)
+		var best_value = PieceCompanion.get_value_for_type(best_type)
+		var meld_value = PieceCompanion.get_value_for_type(meld[0])
+
+		if meld_value > best_value or (meld_value == best_value and meld[1].size() > best_meld_size):
+			best_type = piece.type
+			best_meld_size = meld[1].size()
+	
+	if best_type == null or best_type == 'crystal':
+		return 'rock'
+	else:
+		return best_type
+
+
 func get_group(type, position = get_mouse_to_board_position(), inside = [position]):
 	var neighbors = get_neighbors(position)
 
@@ -214,6 +250,7 @@ func get_group(type, position = get_mouse_to_board_position(), inside = [positio
 	return inside
 
 
+# Returns [resulting type at position, list of positions melded including the origin]
 func get_meld(type, position = get_mouse_to_board_position(), meld = []):
 	var group = get_group(type, position)
 	var upgrade = get_upgrade(type, group.size())
@@ -223,7 +260,6 @@ func get_meld(type, position = get_mouse_to_board_position(), meld = []):
 	else: 
 		# Note that the meld may contain duplicates of the origin position.
 		return get_meld(upgrade, position, meld + group)
-
 
 
 func get_neighbors(position):

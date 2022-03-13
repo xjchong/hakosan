@@ -10,6 +10,30 @@ var is_super = false
 var pulse_positions = null
 
 
+static func get_value_for_type(_type):
+	var value_for_type = {
+		'grass': 5,
+		'bush': 20,
+		'tree': 100,
+		'bonfire': 500,
+		'camp': 1500,
+		'house': 5000,
+		'mansion': 20000,
+		'tower': 100000,
+		'castle': 500000,
+		'rock': 0,
+		'mine': 1000,
+		'gold': 10000,
+		'treasure': 50000,
+		'slime': 0,
+		'grave': 0,
+		'ruins': 1000,
+		'dungeon': 5000,
+	}
+
+	return value_for_type.get(_type, 0)
+
+
 func _ready():
 	tween.connect('tween_all_completed', self, 'play_tween_pulse')
 
@@ -57,26 +81,7 @@ func set_label():
 
 func get_value():
 	var modifier = 2 if is_super else 1
-	var value_for_type = {
-		'grass': 5,
-		'bush': 20,
-		'tree': 100,
-		'bonfire': 500,
-		'camp': 1500,
-		'house': 5000,
-		'mansion': 20000,
-		'tower': 100000,
-		'castle': 500000,
-		'rock': 0,
-		'mine': 1000,
-		'gold': 10000,
-		'treasure': 50000,
-		'slime': 0,
-		'grave': 0,
-		'ruins': 1000,
-		'dungeon': 5000,
-	}
 
-	return modifier * value_for_type.get(type, 0)
+	return modifier * get_value_for_type(type)
 
 		
