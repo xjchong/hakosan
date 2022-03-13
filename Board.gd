@@ -37,6 +37,30 @@ func setup_pieces():
 				place_piece(get_starting_piece_type(), Vector2(x, y))
 
 
+# TODO: Add actual loot inside!
+func loot_piece(position = get_mouse_to_board_position()):
+	if position == null:
+		return
+
+	var piece = board[position.x][position.y]
+	var type = null
+
+	if piece != null:
+		type = piece.type
+	
+	match type:
+		'gold': 
+			piece.queue_free()
+			board[position.x][position.y] = null
+			return
+		'mine':
+			piece.queue_free()
+			board[position.x][position.y] = null
+			return
+		_:
+			return
+
+
 func place_piece(type, position = get_mouse_to_board_position()):
 	if is_position_occupied(position) or type == null:
 		return null
@@ -125,6 +149,11 @@ func is_playable(piece, position = get_mouse_to_board_position()):
 func get_action_type(piece, position = get_mouse_to_board_position()):
 	if position == null:
 		return null
+	
+	var board_piece = board[position.x][position.y]
+
+	if board_piece != null and (board_piece.type == 'gold' or board_piece.type == 'treasure'):
+		return 'loot'
 	elif position == STORAGE_POSITION:
 		return 'store'
 	elif piece.type == 'hammer' && is_position_occupied(position):

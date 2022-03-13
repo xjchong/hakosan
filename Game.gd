@@ -27,6 +27,8 @@ func _input(event):
 			var action_type = board.get_action_type(current_piece)
 
 			match action_type:
+				'loot':
+					board.loot_piece()
 				'place':
 					var value = board.place_piece(current_piece.type)
 
