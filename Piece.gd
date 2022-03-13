@@ -1,15 +1,16 @@
 class_name Piece
 extends Node2D
 
-onready var label = $Label
-onready var highlight_rect = $HighlightRect
+onready var label = $Label as Label
+onready var highlight_rect = $HighlightRect as ColorRect
+onready var tween = $Tween as Tween
+
 var type = 'unknown'
 var is_super = false
+var pulse_positions = null
 
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	tween.connect('tween_all_completed', self, 'play_tween_pulse')
 
 
 func set_type(new_type, new_is_super = false):
@@ -27,11 +28,26 @@ func unhighlight():
 
 
 func pulse_on(towards_position):
+	pulse_positions = [position, position.move_toward(towards_position, 4)]
 	highlight_rect.visible = true
+	play_tween_pulse()
 
 
 func pulse_off():
 	highlight_rect.visible = false
+	tween.stop(self)
+
+	if pulse_positions != null:
+		position = pulse_positions[0]
+
+
+func play_tween_pulse():
+	var from = pulse_positions[0] if position == pulse_positions[0] else pulse_positions[1]
+	var to = pulse_positions[1] if position == pulse_positions[0] else pulse_positions[0]
+
+	tween.interpolate_property(self, 'position', from, to, 0.25)
+	tween.start()
+
 	
 	
 func set_label():

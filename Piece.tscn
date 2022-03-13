@@ -30,3 +30,5 @@ margin_bottom = 20.0
 text = "A"
 align = 1
 valign = 1
+
+[node name="Tween" type="Tween" parent="."]

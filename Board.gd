@@ -149,7 +149,7 @@ func hover_piece(piece, position = get_mouse_to_board_position()):
 		if meld_position != position:
 			var meld_piece = board[meld_position.x][meld_position.y]
 
-			meld_piece.pulse_on(piece.position)
+			meld_piece.pulse_on(piece.position - self.position)
 
 
 func reset_hover():
