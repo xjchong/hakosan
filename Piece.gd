@@ -9,6 +9,7 @@ var type = 'unknown'
 var is_super = false
 var pulse_positions = null
 
+
 func _ready():
 	tween.connect('tween_all_completed', self, 'play_tween_pulse')
 
@@ -70,6 +71,10 @@ func get_value():
 		'mine': 1000,
 		'gold': 10000,
 		'treasure': 50000,
+		'slime': 0,
+		'grave': 0,
+		'ruins': 1000,
+		'dungeon': 5000,
 	}
 
 	return modifier * value_for_type.get(type, 0)

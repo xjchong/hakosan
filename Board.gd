@@ -9,6 +9,7 @@ const ROWS = 6
 const COLUMNS = 6
 const PIECE_SIZE = 64
 const PIECE_OFFSET = Vector2(int(PIECE_SIZE / 2), int(PIECE_SIZE / 2))
+const STORAGE_POSITION = Vector2.ZERO
 
 var board = []
 var stored_piece = null
@@ -31,7 +32,7 @@ func setup_pieces():
 	for x in COLUMNS:
 		for y in ROWS:
 			if x == 0 and y == 0:
-				place_piece('storage', Vector2.ZERO)
+				place_piece('storage', STORAGE_POSITION)
 			else: 
 				place_piece(get_starting_piece_type(), Vector2(x, y))
 
@@ -74,24 +75,31 @@ func store_piece(type):
 		stored_piece.queue_free()
 
 	stored_piece = Piece.instance()
-	stored_piece.position = Vector2.ZERO + PIECE_OFFSET
+	stored_piece.position = STORAGE_POSITION + PIECE_OFFSET
 	add_child(stored_piece)
 	stored_piece.set_type(type)
 
 	return old_stored_piece_type
 
 
-func remove_piece(position = get_mouse_to_board_position()):
-	if not is_position_occupied(position):
+func hammer_piece(position = get_mouse_to_board_position()):
+	if not is_position_occupied(position) or position == STORAGE_POSITION:
 		return null
 
 	var piece = board[position.x][position.y]
+	var type = piece.type
 	var value = piece.get_value()
 
-	board[position.x][position.y] = null
 	piece.queue_free()
+	board[position.x][position.y] = null
 
-	return value
+	match type:
+		'mine':
+			return -place_piece('gold', position)
+		'slime':
+			return -place_piece('grave', position)
+		_: 
+			return value
 
 
 func is_position_occupied(position):
@@ -117,10 +125,10 @@ func is_playable(piece, position = get_mouse_to_board_position()):
 func get_action_type(piece, position = get_mouse_to_board_position()):
 	if position == null:
 		return null
-	elif position == Vector2.ZERO:
+	elif position == STORAGE_POSITION:
 		return 'store'
 	elif piece.type == 'hammer' && is_position_occupied(position):
-		return 'remove'
+		return 'hammer'
 	elif not piece.type == 'hammer' and not is_position_occupied(position):
 		return 'place'
 	else:

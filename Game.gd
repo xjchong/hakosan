@@ -34,8 +34,8 @@ func _input(event):
 						score += value
 						current_piece.queue_free()
 						current_piece = set_next_piece()
-				'remove':
-					var value = board.remove_piece()
+				'hammer':
+					var value = board.hammer_piece()
 
 					if value != null:
 						score -= value
@@ -54,6 +54,7 @@ func _input(event):
 
 func set_next_piece(type = get_next_piece_type()):
 	var piece = Piece.instance()
+	piece.position = get_global_mouse_position()
 	add_child(piece)
 	piece.set_type(type)
 
@@ -70,7 +71,7 @@ func get_next_piece_type():
 	chances.append(['tree', 0.03])
 	chances.append(['bonfire', 0.01])
 	chances.append(['crystal', 0.03])
-	chances.append(['hammer', 0.03])
+	chances.append(['hammer', 0.23])
 
 	for chance in chances:
 		chance_acc += chance[1]
