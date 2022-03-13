@@ -54,7 +54,7 @@ func loot_piece(position = get_mouse_to_board_position()):
 			piece.queue_free()
 			board[position.x][position.y] = null
 			return
-		'mine':
+		'treasure':
 			piece.queue_free()
 			board[position.x][position.y] = null
 			return
