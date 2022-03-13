@@ -32,3 +32,5 @@ align = 1
 valign = 1
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="TweenMove" type="Tween" parent="."]

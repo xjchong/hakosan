@@ -4,6 +4,7 @@ extends Node2D
 onready var label = $Label as Label
 onready var highlight_rect = $HighlightRect as ColorRect
 onready var tween = $Tween as Tween
+onready var tween_move = $TweenMove as Tween
 
 var type = 'unknown'
 var is_super = false
@@ -73,6 +74,10 @@ func play_tween_pulse():
 	tween.interpolate_property(self, 'position', from, to, 0.25)
 	tween.start()
 
+
+func move(to):
+	tween_move.interpolate_property(self, 'position', position, to, 0.3)
+	tween_move.start()
 	
 	
 func set_label():

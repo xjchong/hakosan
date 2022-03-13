@@ -38,6 +38,10 @@ func setup_pieces():
 				place_piece(get_starting_piece_type(), Vector2(x, y))
 
 
+func get_position_from_board_position(board_position):
+	return Vector2(board_position.x * PIECE_SIZE, board_position.y * PIECE_SIZE) + PIECE_OFFSET
+
+
 # TODO: Add actual loot inside!
 func loot_piece(position = get_mouse_to_board_position()):
 	if position == null:
@@ -70,15 +74,16 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		type = get_wildcard_type(position)
 
 	var meld = get_meld(type, position)
+	var value = null
 
 	if meld[0] == type:
 		var piece = Piece.instance()
 		add_child(piece)
 		piece.set_type(type)
-		piece.position = Vector2(position.x * PIECE_SIZE, position.y * PIECE_SIZE) + PIECE_OFFSET
+		piece.position = get_position_from_board_position(position)
 		board[position.x][position.y] = piece
 
-		return 0
+		value = 0
 	else: 
 		for meld_position in meld[1]:
 			if meld_position != position:
@@ -89,10 +94,12 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		var piece = Piece.instance()
 		add_child(piece)
 		piece.set_type(meld[0])
-		piece.position = Vector2(position.x * PIECE_SIZE, position.y * PIECE_SIZE) + PIECE_OFFSET
+		piece.position = get_position_from_board_position(position)
 		board[position.x][position.y] = piece
 
-		return piece.get_value()
+		value = piece.get_value()
+	
+	return value
 
 
 func store_piece(type): 
@@ -204,6 +211,36 @@ func reset_hover():
 	
 	hover_piece_type = null
 	hover_position = null
+
+
+func move_slimes():
+	var slime_positions = []
+
+	# Get the positions of all the slimes on board.
+	for y in ROWS:
+		for x in COLUMNS:
+			var piece = board[x][y]
+
+			if piece != null and piece.type == 'slime':
+				slime_positions.append(Vector2(x, y))
+	
+	slime_positions.shuffle()
+
+	# Attempt to move each of the slimes on the the board.
+	for position in slime_positions:
+		var neighbors = get_neighbors(position)
+		neighbors.shuffle()
+
+		for neighbor in neighbors:
+			if not is_position_occupied(neighbor):
+				var slime = board[position.x][position.y]
+
+				# TODO: Why is this check necessary?
+				if slime != null:
+					board[position.x][position.y] = null
+					board[neighbor.x][neighbor.y] = slime
+
+					slime.move(get_position_from_board_position(neighbor))
 
 
 func get_wildcard_type(position):

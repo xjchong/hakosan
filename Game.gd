@@ -36,6 +36,7 @@ func _input(event):
 						score += value
 						current_piece.queue_free()
 						current_piece = set_next_piece()
+						board.move_slimes()
 				'hammer':
 					var value = board.hammer_piece()
 
@@ -43,6 +44,7 @@ func _input(event):
 						score -= value
 						current_piece.queue_free()
 						current_piece = set_next_piece()
+						board.move_slimes()
 				'store':
 					var stored_piece_type = board.store_piece(current_piece.type)
 					
