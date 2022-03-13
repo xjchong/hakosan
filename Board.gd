@@ -264,7 +264,10 @@ func get_wildcard_type(position):
 		var best_value = PieceCompanion.get_value_for_type(best_type)
 		var meld_value = PieceCompanion.get_value_for_type(meld[0])
 
-		if meld_value > best_value or (meld_value == best_value and meld[1].size() > best_meld_size):
+		if meld[0] == piece.type:
+			# Meld was unsuccessful with this type.
+			continue
+		elif meld_value > best_value or (meld_value == best_value and meld[1].size() > best_meld_size):
 			best_type = piece.type
 			best_meld_size = meld[1].size()
 	
