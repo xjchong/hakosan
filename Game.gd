@@ -39,9 +39,9 @@ func _input(event):
 					if value != null:
 						current_piece.queue_free()
 						current_piece = set_next_piece()
-						board.move_slimes()
-						board.trap_slimes()
-						increase_score(value + board.meld_graveyards())
+						board.move_bears()
+						board.trap_bears()
+						increase_score(value + board.meld_tombstoneyards())
 
 					AudioManager.play(Audio.PLACE)
 				'hammer':
@@ -52,9 +52,9 @@ func _input(event):
 						decrease_score(value)
 						current_piece.queue_free()
 						current_piece = set_next_piece()
-						board.move_slimes()
-						board.trap_slimes()
-						increase_score(board.meld_graveyards())
+						board.move_bears()
+						board.trap_bears()
+						increase_score(board.meld_tombstoneyards())
 				'store':
 					var stored_piece_type = board.store_piece(current_piece.type)
 					
@@ -93,7 +93,7 @@ func get_next_piece_type():
 	chances.append(['grass', 0.6])
 	chances.append(['bush', 0.15])
 	chances.append(['tree', 0.03])
-	chances.append(['bonfire', 0.01])
+	chances.append(['hut', 0.01])
 	chances.append(['crystal', 0.03])
 	chances.append(['hammer', 0.03])
 
@@ -103,6 +103,6 @@ func get_next_piece_type():
 		if roll < chance_acc:
 			return chance[0]
 	
-	return 'slime'
+	return 'bear'
 	
 	

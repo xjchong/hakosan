@@ -38,7 +38,7 @@ func setup_pieces():
 			else: 
 				place_piece(get_starting_piece_type(), Vector2(x, y), false)
 	
-	trap_slimes()
+	trap_bears()
 
 
 func get_position_from_board_position(board_position):
@@ -57,11 +57,11 @@ func loot_piece(position = get_mouse_to_board_position()):
 		type = piece.type
 	
 	match type:
-		'gold': 
+		'small_chest': 
 			piece.queue_free()
 			board[position.x][position.y] = null
 			return
-		'treasure':
+		'large_chest':
 			piece.queue_free()
 			board[position.x][position.y] = null
 			return
@@ -144,12 +144,12 @@ func hammer_piece(position = get_mouse_to_board_position()):
 	board[position.x][position.y] = null
 
 	match type:
-		'mine':
-			value = -place_piece('gold', position)
+		'mountain':
+			value = -place_piece('small_chest', position)
 			toast('+%d' % value, position)
 			return value
-		'slime':
-			value = place_piece('grave', position)
+		'bear':
+			value = place_piece('tombstone', position)
 			if value > 0:
 				toast('+%d' % value, position)
 			return value
@@ -185,7 +185,7 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 	
 	var board_piece = board[position.x][position.y]
 
-	if board_piece != null and (board_piece.type == 'gold' or board_piece.type == 'treasure'):
+	if board_piece != null and (board_piece.type == 'small_chest' or board_piece.type == 'large_chest'):
 		return 'loot'
 	elif position == STORAGE_POSITION:
 		return 'store'
@@ -235,49 +235,49 @@ func reset_hover():
 	hover_position = null
 
 
-func move_slimes():
-	var slime_positions = []
+func move_bears():
+	var bear_positions = []
 
-	# Get the positions of all the slimes on board.
+	# Get the positions of all the bears on board.
 	for y in ROWS:
 		for x in COLUMNS:
 			var piece = board[x][y]
 
-			if piece != null and piece.type == 'slime':
-				slime_positions.append(Vector2(x, y))
+			if piece != null and piece.type == 'bear':
+				bear_positions.append(Vector2(x, y))
 	
-	slime_positions.shuffle()
+	bear_positions.shuffle()
 
-	# Attempt to move each of the slimes on the the board.
-	for position in slime_positions:
+	# Attempt to move each of the bears on the the board.
+	for position in bear_positions:
 		var neighbors = get_neighbors(position)
 		neighbors.shuffle()
 
 		for neighbor in neighbors:
 			if not is_position_occupied(neighbor):
-				var slime = board[position.x][position.y]
+				var bear = board[position.x][position.y]
 
 				# TODO: Why is this check necessary?
-				if slime != null:
+				if bear != null:
 					board[position.x][position.y] = null
-					board[neighbor.x][neighbor.y] = slime
+					board[neighbor.x][neighbor.y] = bear
 
-					slime.move(get_position_from_board_position(neighbor))
+					bear.move(get_position_from_board_position(neighbor))
 
 
-func trap_slimes():
+func trap_bears():
 	for y in ROWS:
 		for x in COLUMNS:
 			var piece = board[x][y]
 
-			if piece == null or piece.type != 'slime':
+			if piece == null or piece.type != 'bear':
 				continue
 			
-			var group = get_group('slime', Vector2(x, y))
+			var group = get_group('bear', Vector2(x, y))
 			var is_group_trapped = true
 			
-			for slime_position in group:
-				var neighbors = get_neighbors(slime_position)
+			for bear_position in group:
+				var neighbors = get_neighbors(bear_position)
 
 				for neighbor in neighbors:
 					if board[neighbor.x][neighbor.y] == null:
@@ -288,37 +288,37 @@ func trap_slimes():
 					break
 				
 			if is_group_trapped:
-				for slime_position in group:
-					var slime = board[slime_position.x][slime_position.y]
+				for bear_position in group:
+					var bear = board[bear_position.x][bear_position.y]
 
-					if slime != null:
-						slime.set_type('grave')
+					if bear != null:
+						bear.set_type('tombstone')
 
 
-func meld_graveyards():
+func meld_tombstoneyards():
 	var score = 0
 
 	for y in ROWS:
 		for x in COLUMNS:
 			var piece = board[x][y]
 
-			if piece == null or piece.type != 'grave':
+			if piece == null or piece.type != 'tombstone':
 				continue
 			
-			var group = get_group('grave', Vector2(x, y))
-			var newest_grave = piece
-			var newest_grave_position = Vector2(x, y)
+			var group = get_group('tombstone', Vector2(x, y))
+			var newest_tombstone = piece
+			var newest_tombstone_position = Vector2(x, y)
 
-			for grave_position in group:
-				var grave = board[grave_position.x][grave_position.y]
+			for tombstone_position in group:
+				var tombstone = board[tombstone_position.x][tombstone_position.y]
 
-				if grave != null and grave.type == 'grave' and grave.timestamp > newest_grave.timestamp:
-					newest_grave = grave
-					newest_grave_position = grave_position
+				if tombstone != null and tombstone.type == 'tombstone' and tombstone.timestamp > newest_tombstone.timestamp:
+					newest_tombstone = tombstone
+					newest_tombstone_position = tombstone_position
 			
-			newest_grave.queue_free()
-			board[newest_grave_position.x][newest_grave_position.y] = null
-			score += place_piece('grave', newest_grave_position)
+			newest_tombstone.queue_free()
+			board[newest_tombstone_position.x][newest_tombstone_position.y] = null
+			score += place_piece('tombstone', newest_tombstone_position)
 	
 	return score
 
@@ -412,8 +412,8 @@ func get_starting_piece_type():
 	chances.append(['bush', 0.06])
 	chances.append(['tree', 0.03])
 	chances.append(['rock', 0.03])
-	chances.append(['grave', 0.03])
-	chances.append(['slime', 0.03])
+	chances.append(['tombstone', 0.03])
+	chances.append(['bear', 0.03])
 
 	for chance in chances:
 		chance_acc += chance[1]
@@ -429,18 +429,18 @@ func get_upgrade(type, quantity):
 	var upgrade_for_type = {
 		'grass': ['bush', 3],
 		'bush': ['tree', 3],
-		'tree': ['bonfire', 3],
-		'bonfire': ['camp', 3],
-		'camp': ['house', 3],
+		'tree': ['hut', 3],
+		'hut': ['house', 3],
 		'house': ['mansion', 3],
-		'mansion': ['tower', 3],
-		'tower': ['castle', 4],
-		'rock': ['mine', 3],
-		'mine': ['treasure', 3],
-		'gold': ['treasure', 3],
-		'grave': ['ruins', 3],
-		'ruins': ['dungeon', 3],
-		'dungeon': ['treasure', 3]
+		'mansion': ['castle', 3],
+		'castle': ['floating_castle', 3],
+		'floating_castle': ['triple_castle', 4],
+		'rock': ['mountain', 3],
+		'mountain': ['large_chest', 3],
+		'small_chest': ['large_chest', 3],
+		'tombstone': ['church', 3],
+		'church': ['cathedral', 3],
+		'cathedral': ['large_chest', 3]
 	}
 	var upgrade = upgrade_for_type.get(type, [null, 0])
 
