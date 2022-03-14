@@ -8,3 +8,11 @@ script = ExtResource( 1 )
 
 [node name="Board" parent="." instance=ExtResource( 2 )]
 position = Vector2( 108, 64 )
+
+[node name="ScoreLabel" type="Label" parent="."]
+margin_left = 419.0
+margin_top = 43.0
+margin_right = 491.0
+margin_bottom = 57.0
+text = "999999999"
+align = 2

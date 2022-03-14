@@ -76,7 +76,7 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		type = get_wildcard_type(position)
 
 	var meld = get_meld(type, position)
-	var value = null
+	var value = PieceCompanion.get_value_for_type(type)
 
 	if meld[0] == type:
 		var piece = Piece.instance()
@@ -84,8 +84,6 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		piece.set_type(type)
 		piece.position = get_position_from_board_position(position)
 		board[position.x][position.y] = piece
-
-		value = 0
 	else: 
 		for meld_position in meld[1]:
 			if meld_position != position:
@@ -99,7 +97,7 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		piece.position = get_position_from_board_position(position)
 		board[position.x][position.y] = piece
 
-		value = piece.get_value()
+		value += piece.get_value()
 	
 	return value
 

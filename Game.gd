@@ -2,6 +2,7 @@ class_name Game
 extends Node2D
 
 onready var board = $Board as Board
+onready var score_label = $ScoreLabel as Label
 
 const Piece = preload('res://Piece.tscn')
 
@@ -9,6 +10,7 @@ var current_piece = null
 var score = 0
 
 func _ready():
+	score_label.text = '0'
 	board.setup_pieces()
 	current_piece = set_next_piece()
 
@@ -33,22 +35,21 @@ func _input(event):
 					var value = board.place_piece(current_piece.type)
 
 					if value != null:
-						score += value
 						current_piece.queue_free()
 						current_piece = set_next_piece()
 						board.move_slimes()
 						board.trap_slimes()
-						score += board.meld_graveyards()
+						increase_score(value + board.meld_graveyards())
 				'hammer':
 					var value = board.hammer_piece()
 
 					if value != null:
-						score -= value
+						decrease_score(value)
 						current_piece.queue_free()
 						current_piece = set_next_piece()
 						board.move_slimes()
 						board.trap_slimes()
-						score += board.meld_graveyards()
+						increase_score(board.meld_graveyards())
 				'store':
 					var stored_piece_type = board.store_piece(current_piece.type)
 					
@@ -58,6 +59,15 @@ func _input(event):
 						current_piece = set_next_piece()
 					else:
 						current_piece = set_next_piece(stored_piece_type)
+
+func increase_score(value):
+	score += value
+	score_label.text = String(score)
+
+
+func decrease_score(value):
+	score -= value
+	score_label.text = String(score)
 
 
 func set_next_piece(type = get_next_piece_type()):
