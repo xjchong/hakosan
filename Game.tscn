@@ -10,9 +10,10 @@ script = ExtResource( 1 )
 position = Vector2( 108, 64 )
 
 [node name="ScoreLabel" type="Label" parent="."]
-margin_left = 419.0
-margin_top = 43.0
-margin_right = 491.0
-margin_bottom = 57.0
+margin_left = 292.0
+margin_top = 491.0
+margin_right = 364.0
+margin_bottom = 505.0
+rect_scale = Vector2( 3, 3 )
 text = "999999999"
 align = 2

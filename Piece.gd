@@ -2,6 +2,7 @@ class_name Piece
 extends Node2D
 
 onready var label = $Label as Label
+onready var appearance = $AppearanceSprite as AnimatedSprite
 onready var highlight_rect = $HighlightRect as ColorRect
 onready var tween_pulse = $TweenPulse as Tween
 onready var tween_move = $TweenMove as Tween
@@ -46,7 +47,7 @@ func _ready():
 func set_type(new_type, new_is_super = false):
 	type = new_type
 	is_super = new_is_super
-	set_label()
+	set_appearance()
 
 
 func highlight():
@@ -59,12 +60,10 @@ func unhighlight():
 
 func pulse_on(towards_position):
 	pulse_positions = [position, position.move_toward(towards_position, 4)]
-	highlight_rect.visible = true
 	play_tween_pulse()
 
 
 func pulse_off():
-	highlight_rect.visible = false
 	tween_pulse.stop(self)
 
 	if pulse_positions != null:
@@ -92,6 +91,33 @@ func meld(to):
 	
 func set_label():
 	label.text = type
+
+
+func set_appearance():
+	var frame_for_type = {
+		'grass': 0,
+		'bush': 1,
+		'tree': 2,
+		'bonfire': 3,
+		'camp': 4,
+		'house': 5,
+		'mansion': 6,
+		'tower': 7,
+		'castle': 8,
+		'slime': 9,
+		'grave': 10,
+		'ruins': 11,
+		'dungeon': 12,
+		'gold': 13,
+		'treasure': 14,
+		'crystal': 15,
+		'hammer': 16,
+		'rock': 17,
+		'mine': 18,
+		'storage': 35,
+	}
+
+	appearance.frame = frame_for_type.get(type, 34)
 
 
 func get_value():
