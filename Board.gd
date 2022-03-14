@@ -7,36 +7,42 @@ const Piece = preload('res://Piece.tscn')
 const PieceCompanion = preload('res://Piece.gd')
 const ToastText = preload('res://ToastText.tscn')
 
-const ROWS = 6
-const COLUMNS = 6
+const STANDARD_ROWS = 6
+const STANDARD_COLUMNS = 6
+const STANDARD_STORAGE_POSITIONS = [Vector2.ZERO]
+
 const PIECE_SIZE = 64
 const PIECE_OFFSET = Vector2(int(PIECE_SIZE / 2), int(PIECE_SIZE / 2))
-const STORAGE_POSITION = Vector2.ZERO
 
+var rows = STANDARD_ROWS
+var columns = STANDARD_COLUMNS
+var storage_positions = STANDARD_STORAGE_POSITIONS
 var board = []
 var stored_piece = null
 var hover_position = null
 var hover_piece_type = null
 
 func _ready():
-	background.set_size(Vector2(PIECE_SIZE * COLUMNS, PIECE_SIZE * ROWS))
+	background.set_size(Vector2(PIECE_SIZE * columns, PIECE_SIZE * rows))
 
-	for x in COLUMNS:
+	for x in columns:
 		board.append([])
 
-		for y in ROWS:
+		for y in rows:
 			board[x].append(null)
 
 
 func setup_pieces():
 	randomize()
 
-	for x in COLUMNS:
-		for y in ROWS:
-			if x == 0 and y == 0:
-				place_piece('storage', STORAGE_POSITION, false)
+	for x in STANDARD_COLUMNS:
+		for y in STANDARD_ROWS:
+			var position = Vector2(x, y)
+
+			if position in STANDARD_STORAGE_POSITIONS:
+				place_piece('storage', position, false)
 			else: 
-				place_piece(get_starting_piece_type(), Vector2(x, y), false)
+				place_piece(get_starting_piece_type(), position, false)
 	
 	trap_bears()
 
@@ -117,7 +123,10 @@ func toast(text, position):
 	add_child(toast_text)
 
 
-func store_piece(type): 
+func store_piece(type, position = get_mouse_to_board_position()): 
+	if not position in storage_positions:
+		return 'error'
+
 	var old_stored_piece_type = null
 
 	if stored_piece != null:
@@ -125,7 +134,7 @@ func store_piece(type):
 		stored_piece.queue_free()
 
 	stored_piece = Piece.instance()
-	stored_piece.position = STORAGE_POSITION + PIECE_OFFSET
+	stored_piece.position = position + PIECE_OFFSET
 	add_child(stored_piece)
 	stored_piece.set_type(type)
 
@@ -133,7 +142,7 @@ func store_piece(type):
 
 
 func hammer_piece(position = get_mouse_to_board_position()):
-	if not is_position_occupied(position) or position == STORAGE_POSITION:
+	if not is_position_occupied(position) or position in storage_positions:
 		return null
 
 	var piece = board[position.x][position.y]
@@ -164,9 +173,9 @@ func get_mouse_to_board_position():
 	var mouse_position = get_local_mouse_position()
 	var board_position = Vector2(int(mouse_position.x / PIECE_SIZE), int(mouse_position.y / PIECE_SIZE))
 
-	if board_position.x < 0 or board_position.x >= COLUMNS:
+	if board_position.x < 0 or board_position.x >= columns:
 		return null
-	elif board_position.y < 0 or board_position.y >= ROWS:
+	elif board_position.y < 0 or board_position.y >= rows:
 		return null
 	else:
 		return board_position
@@ -184,7 +193,7 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 
 	if board_piece != null and (board_piece.type == 'small_chest' or board_piece.type == 'large_chest'):
 		return 'loot'
-	elif position == STORAGE_POSITION:
+	elif position in storage_positions:
 		return 'store'
 	elif piece.type == 'hammer' && is_position_occupied(position):
 		return 'hammer'
@@ -221,11 +230,11 @@ func hover_piece(piece, position = get_mouse_to_board_position()):
 
 
 func reset_hover():
-	for row in ROWS:
-		for col in COLUMNS:
+	for row in rows:
+		for col in columns:
 			var piece = board[row][col]
 
-			if piece != null:
+			if piece != null and is_instance_valid(piece):
 				piece.pulse_off()
 	
 	hover_piece_type = null
@@ -236,8 +245,8 @@ func move_bears():
 	var bear_positions = []
 
 	# Get the positions of all the bears on board.
-	for y in ROWS:
-		for x in COLUMNS:
+	for y in rows:
+		for x in columns:
 			var piece = board[x][y]
 
 			if piece != null and piece.type == 'bear':
@@ -263,8 +272,8 @@ func move_bears():
 
 
 func trap_bears():
-	for y in ROWS:
-		for x in COLUMNS:
+	for y in rows:
+		for x in columns:
 			var piece = board[x][y]
 
 			if piece == null or piece.type != 'bear':
@@ -295,8 +304,8 @@ func trap_bears():
 func meld_tombstoneyards():
 	var score = 0
 
-	for y in ROWS:
-		for x in COLUMNS:
+	for y in rows:
+		for x in columns:
 			var piece = board[x][y]
 
 			if piece == null or piece.type != 'tombstone':
@@ -391,10 +400,10 @@ func get_neighbors(position):
 	if position.y > 0:
 		neighbors.append(position + Vector2.UP)
 
-	if position.x < COLUMNS - 1:
+	if position.x < columns - 1:
 		neighbors.append(position + Vector2.RIGHT)
 
-	if position.y < ROWS - 1:
+	if position.y < rows - 1:
 		neighbors.append(position + Vector2.DOWN)
 
 	return neighbors

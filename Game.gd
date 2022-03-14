@@ -11,14 +11,16 @@ var current_piece = null
 var score = 0
 
 func _ready():
-	score_label.text = '0'
-	board.setup_pieces()
-	current_piece = set_next_piece()
+	if not SaveManager.load_game(self):
+		board.setup_pieces()
+		set_next_piece()
+
+	score_label.text = String(score)
 
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		if current_piece != null:
+		if current_piece != null and is_instance_valid(current_piece):
 			if board.is_playable(current_piece):
 				board.hover_piece(current_piece)
 			else:
@@ -38,7 +40,7 @@ func _input(event):
 
 					if value != null:
 						current_piece.queue_free()
-						current_piece = set_next_piece()
+						set_next_piece()
 						board.move_bears()
 						board.trap_bears()
 						increase_score(value + board.meld_tombstoneyards())
@@ -51,20 +53,23 @@ func _input(event):
 						AudioManager.play(Audio.REMOVE)
 						decrease_score(value)
 						current_piece.queue_free()
-						current_piece = set_next_piece()
+						set_next_piece()
 						board.move_bears()
 						board.trap_bears()
 						increase_score(board.meld_tombstoneyards())
 				'store':
 					var stored_piece_type = board.store_piece(current_piece.type)
 					
-					current_piece.queue_free()
-					AudioManager.play(Audio.STORE)
+					if stored_piece_type != 'error':
+						current_piece.queue_free()
+						AudioManager.play(Audio.STORE)
 
 					if stored_piece_type == null:
-						current_piece = set_next_piece()
+						set_next_piece()
 					else:
-						current_piece = set_next_piece(stored_piece_type)
+						set_next_piece(stored_piece_type)
+
+			SaveManager.save_game(self)
 
 func increase_score(value):
 	score += value
@@ -77,12 +82,16 @@ func decrease_score(value):
 
 
 func set_next_piece(type = get_next_piece_type()):
+	if type == null:
+		type = get_next_piece_type()
+
 	var piece = Piece.instance()
 	piece.position = get_global_mouse_position()
 	add_child(piece)
 	piece.set_type(type)
 
-	return piece
+	current_piece = piece
+
 
 
 func get_next_piece_type():
