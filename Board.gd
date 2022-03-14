@@ -5,6 +5,7 @@ onready var background = $Background as ColorRect
 
 const Piece = preload('res://Piece.tscn')
 const PieceCompanion = preload('res://Piece.gd')
+const ToastText = preload('res://ToastText.tscn')
 
 const ROWS = 6
 const COLUMNS = 6
@@ -33,9 +34,9 @@ func setup_pieces():
 	for x in COLUMNS:
 		for y in ROWS:
 			if x == 0 and y == 0:
-				place_piece('storage', STORAGE_POSITION)
+				place_piece('storage', STORAGE_POSITION, false)
 			else: 
-				place_piece(get_starting_piece_type(), Vector2(x, y))
+				place_piece(get_starting_piece_type(), Vector2(x, y), false)
 	
 	trap_slimes()
 
@@ -68,7 +69,7 @@ func loot_piece(position = get_mouse_to_board_position()):
 			return
 
 
-func place_piece(type, position = get_mouse_to_board_position()):
+func place_piece(type, position = get_mouse_to_board_position(), should_fx = true):
 	if is_position_occupied(position) or type == null:
 		return null
 
@@ -97,10 +98,23 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		piece.position = get_position_from_board_position(position)
 		board[position.x][position.y] = piece
 
-		AudioManager.play(Audio.MELD)
 		value += piece.get_value()
+
+		if should_fx:
+			AudioManager.play(Audio.MELD)
+
+	if should_fx and value > 0:
+		toast('+%d' % value, position)
 	
 	return value
+
+
+func toast(text, position):
+	var toast_text = ToastText.instance()
+	var offset = Vector2.UP * int(PIECE_SIZE / 2)
+	toast_text.text = text
+	toast_text.position = get_position_from_board_position(position) + offset
+	add_child(toast_text)
 
 
 func store_piece(type): 
@@ -131,10 +145,17 @@ func hammer_piece(position = get_mouse_to_board_position()):
 
 	match type:
 		'mine':
-			return -place_piece('gold', position)
+			value = -place_piece('gold', position)
+			toast('+%d' % value, position)
+			return value
 		'slime':
-			return -place_piece('grave', position)
+			value = place_piece('grave', position)
+			if value > 0:
+				toast('+%d' % value, position)
+			return value
 		_: 
+			if value > 0:
+				toast('-%d' % value, position)
 			return value
 
 

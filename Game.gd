@@ -5,6 +5,7 @@ onready var board = $Board as Board
 onready var score_label = $ScoreLabel as Label
 
 const Piece = preload('res://Piece.tscn')
+const ToastText = preload('res://ToastText.tscn')
 
 var current_piece = null
 var score = 0
