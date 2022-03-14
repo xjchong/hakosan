@@ -3,7 +3,7 @@ extends Node2D
 
 onready var label = $Label as Label
 onready var highlight_rect = $HighlightRect as ColorRect
-onready var tween = $Tween as Tween
+onready var tween_pulse = $TweenPulse as Tween
 onready var tween_move = $TweenMove as Tween
 onready var tween_meld = $TweenMeld as Tween
 
@@ -39,7 +39,7 @@ static func get_value_for_type(_type):
 
 func _ready():
 	timestamp = OS.get_ticks_msec()
-	tween.connect('tween_all_completed', self, 'play_tween_pulse')
+	tween_pulse.connect('tween_all_completed', self, 'play_tween_pulse')
 	tween_meld.connect('tween_all_completed', self, 'queue_free')
 
 
@@ -65,7 +65,7 @@ func pulse_on(towards_position):
 
 func pulse_off():
 	highlight_rect.visible = false
-	tween.stop(self)
+	tween_pulse.stop(self)
 
 	if pulse_positions != null:
 		position = pulse_positions[0]
@@ -75,8 +75,8 @@ func play_tween_pulse():
 	var from = pulse_positions[0] if position == pulse_positions[0] else pulse_positions[1]
 	var to = pulse_positions[1] if position == pulse_positions[0] else pulse_positions[0]
 
-	tween.interpolate_property(self, 'position', from, to, 0.25)
-	tween.start()
+	tween_pulse.interpolate_property(self, 'position', from, to, 0.25)
+	tween_pulse.start()
 
 
 func move(to):
