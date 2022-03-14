@@ -32,7 +32,7 @@ func _input(event):
 			match action_type:
 				'loot':
 					board.loot_piece()
-					AudioManager.play(Audio.REMOVE)
+					AudioManager.play(Audio.LOOT)
 				'place':
 					var value = board.place_piece(current_piece.type)
 
