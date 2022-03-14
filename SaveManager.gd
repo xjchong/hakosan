@@ -1,6 +1,7 @@
 extends Node
 
 
+const SAVE_VERSION = 0
 const SAVE_PATH = 'user://'
 
 
@@ -21,6 +22,7 @@ func save_game(game: Game, name = 'game'):
 			board_types[x][y] = null if piece == null else piece.type
 
 	var data = {
+		'save_version': SAVE_VERSION,
 		'rows': rows,
 		'columns': columns,
 		'storage_positions': game.board.storage_positions,
