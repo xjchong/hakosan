@@ -146,12 +146,9 @@ func hammer_piece(position = get_mouse_to_board_position()):
 	match type:
 		'mountain':
 			value = -place_piece('small_chest', position)
-			toast('+%d' % value, position)
 			return value
 		'bear':
 			value = place_piece('tombstone', position)
-			if value > 0:
-				toast('+%d' % value, position)
 			return value
 		_: 
 			if value > 0:
