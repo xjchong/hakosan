@@ -111,7 +111,7 @@ func place_piece(type, position = get_mouse_to_board_position(), should_fx = tru
 
 func toast(text, position):
 	var toast_text = ToastText.instance()
-	var offset = Vector2.UP * int(PIECE_SIZE / 2)
+	var offset = Vector2.UP * int(PIECE_SIZE / 2.0)
 	toast_text.text = text
 	toast_text.position = get_position_from_board_position(position) + offset
 	add_child(toast_text)

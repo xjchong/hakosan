@@ -13,9 +13,8 @@ const SOUND_EFFECTS_BUS: String = "SoundEffects"
 var _available_audio_players = []
 var _queue = []
 
-onready var _background_audio_player := $BackgroundAudio
-onready var _background_volume_tween: Tween = \
-		$BackgroundAudio/BackgroundVolumeTween
+onready var _background_audio_player = $BackgroundAudio
+onready var _background_volume_tween = $BackgroundAudio/BackgroundVolumeTween as Tween
 
 
 func _ready():
@@ -23,7 +22,7 @@ func _ready():
 	_load_volume_settings()
 	
 	for i in MAX_PLAYERS:
-		var audio_player := AudioStreamPlayer.new()
+		var audio_player = AudioStreamPlayer.new()
 		
 		add_child(audio_player)
 		_available_audio_players.append(audio_player)
