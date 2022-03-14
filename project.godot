@@ -36,6 +36,11 @@ config/name="Realm"
 run/main_scene="res://Game.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+AudioManager="*res://AudioManager.tscn"
+Audio="*res://Audio.gd"
+
 [display]
 
 window/size/width=600

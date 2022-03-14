@@ -97,6 +97,7 @@ func place_piece(type, position = get_mouse_to_board_position()):
 		piece.position = get_position_from_board_position(position)
 		board[position.x][position.y] = piece
 
+		AudioManager.play(Audio.MELD)
 		value += piece.get_value()
 	
 	return value

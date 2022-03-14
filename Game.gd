@@ -40,10 +40,13 @@ func _input(event):
 						board.move_slimes()
 						board.trap_slimes()
 						increase_score(value + board.meld_graveyards())
+
+					AudioManager.play(Audio.PLACE)
 				'hammer':
 					var value = board.hammer_piece()
 
 					if value != null:
+						AudioManager.play(Audio.REMOVE)
 						decrease_score(value)
 						current_piece.queue_free()
 						current_piece = set_next_piece()
@@ -54,6 +57,7 @@ func _input(event):
 					var stored_piece_type = board.store_piece(current_piece.type)
 					
 					current_piece.queue_free()
+					AudioManager.play(Audio.STORE)
 
 					if stored_piece_type == null:
 						current_piece = set_next_piece()
