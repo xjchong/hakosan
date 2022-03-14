@@ -5,6 +5,7 @@ onready var label = $Label as Label
 onready var highlight_rect = $HighlightRect as ColorRect
 onready var tween = $Tween as Tween
 onready var tween_move = $TweenMove as Tween
+onready var tween_meld = $TweenMeld as Tween
 
 var type = 'unknown'
 var is_super = false
@@ -39,6 +40,7 @@ static func get_value_for_type(_type):
 func _ready():
 	timestamp = OS.get_ticks_msec()
 	tween.connect('tween_all_completed', self, 'play_tween_pulse')
+	tween_meld.connect('tween_all_completed', self, 'queue_free')
 
 
 func set_type(new_type, new_is_super = false):
@@ -80,6 +82,12 @@ func play_tween_pulse():
 func move(to):
 	tween_move.interpolate_property(self, 'position', position, to, 0.3)
 	tween_move.start()
+
+
+func meld(to):
+	tween_meld.interpolate_property(self, 'position', position, to, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN)
+	tween_meld.interpolate_property(self, 'modulate', Color(1, 1, 1, 1), Color(1, 1, 1, 0), 0.1)
+	tween_meld.start()
 	
 	
 func set_label():
