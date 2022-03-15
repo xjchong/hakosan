@@ -448,7 +448,7 @@ func get_upgrade(type, quantity):
 		'small_chest': ['large_chest', 3],
 		'tombstone': ['church', 3],
 		'church': ['cathedral', 3],
-		'cathedral': ['large_chest', 3]
+		'cathedral': ['small_chest', 3]
 	}
 	var upgrade = upgrade_for_type.get(type, [null, 0])
 
