@@ -497,7 +497,7 @@ func can_types_group(type1, type2):
 	
 	if type1.length() > type2.length():
 		return 'super_' + type2 == type1
-	elif type2.length() < type2.length():
+	elif type1.length() < type2.length():
 		return 'super_' + type1 == type2
 	else:
 		return false
