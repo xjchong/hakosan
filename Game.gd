@@ -122,7 +122,7 @@ func get_next_piece_type():
 	var chance_acc = 0
 
 	chances.append(['grass', 0.6])
-	chances.append(['tombstone', 0.15])
+	chances.append(['bush', 0.15])
 	chances.append(['tree', 0.03])
 	chances.append(['hut', 0.01])
 	chances.append(['crystal', 0.03])
