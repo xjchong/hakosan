@@ -9,7 +9,6 @@ onready var tween_move = $TweenMove as Tween
 onready var tween_meld = $TweenMeld as Tween
 
 var type = 'unknown'
-var is_super = false
 var pulse_positions = null
 var timestamp = 0
 
@@ -18,12 +17,19 @@ static func get_value_for_type(_type):
 	var value_for_type = {
 		'grass': 5,
 		'bush': 20,
+		'super_bush': 40,
 		'tree': 100,
+		'super_tree': 200,
 		'hut': 500,
+		'super_hut': 1000,
 		'house': 1500,
+		'super_house': 3000,
 		'mansion': 5000,
+		'super_mansion': 10000,
 		'castle': 20000,
+		'super_castle': 40000,
 		'floating_castle': 100000,
+		'super_floating_castle': 200000,
 		'triple_castle': 500000,
 		'rock': 0,
 		'mountain': 1000,
@@ -32,7 +38,9 @@ static func get_value_for_type(_type):
 		'bear': 0,
 		'tombstone': 0,
 		'church': 1000,
+		'super_church': 2000,
 		'cathedral': 5000,
+		'super_cathedral': 10000,
 	}
 
 	return value_for_type.get(_type, 0)
@@ -45,9 +53,8 @@ func _ready():
 	tween_meld.connect('tween_all_completed', self, 'queue_free')
 
 
-func set_type(new_type, new_is_super = false):
+func set_type(new_type):
 	type = new_type
-	is_super = new_is_super
 	set_appearance()
 
 
@@ -94,17 +101,26 @@ func set_appearance():
 	var frame_for_type = {
 		'grass': 0,
 		'bush': 1,
+		'super_bush': 19,
 		'tree': 2,
+		'super_tree': 20,
 		'hut': 3,
+		'super_hut': 21,
 		'house': 4,
+		'super_house': 22,
 		'mansion': 5,
+		'super_mansion': 23,
 		'castle': 6,
+		'super_castle': 24,
 		'floating_castle': 7,
+		'super_floating_castle': 25,
 		'triple_castle': 8,
 		'bear': 9,
 		'tombstone': 10,
 		'church': 11,
+		'super_church': 26,
 		'cathedral': 12,
+		'super_cathedral': 27,
 		'small_chest': 13,
 		'large_chest': 14,
 		'crystal': 15,
@@ -118,8 +134,6 @@ func set_appearance():
 
 
 func get_value():
-	var modifier = 2 if is_super else 1
-
-	return modifier * get_value_for_type(type)
+	return get_value_for_type(type)
 
 		

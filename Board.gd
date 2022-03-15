@@ -350,9 +350,6 @@ func meld_tombstones():
 			
 			if meld_value != null:
 				score += meld_value
-			# newest_tombstone.queue_free()
-			# board[newest_tombstone_position.x][newest_tombstone_position.y] = null
-			# score += place_piece('tombstone', newest_tombstone_position)
 	
 	return score
 
@@ -399,7 +396,7 @@ func get_group(type, position = get_mouse_to_board_position(), inside = [positio
 	for neighbor in neighbors:
 		var piece = board[neighbor.x][neighbor.y]
 
-		if not neighbor in inside and piece != null and piece.type == type:
+		if not neighbor in inside and piece != null and can_types_group(piece.type, type):
 			inside.append(neighbor)
 			get_group(type, neighbor, inside)
 
@@ -465,22 +462,58 @@ func get_upgrade(type, quantity):
 	var upgrade_for_type = {
 		'grass': ['bush', 3],
 		'bush': ['tree', 3],
+		'super_bush': ['tree', 3],
 		'tree': ['hut', 3],
+		'super_tree': ['hut', 3],
 		'hut': ['house', 3],
+		'super_hut': ['house', 3],
 		'house': ['mansion', 3],
+		'super_house': ['mansion', 3],
 		'mansion': ['castle', 3],
+		'super_mansion': ['castle', 3],
 		'castle': ['floating_castle', 3],
+		'super_castle': ['floating_castle', 3],
 		'floating_castle': ['triple_castle', 4],
 		'rock': ['mountain', 3],
 		'mountain': ['large_chest', 3],
 		'small_chest': ['large_chest', 3],
 		'tombstone': ['church', 3],
 		'church': ['cathedral', 3],
-		'cathedral': ['small_chest', 3]
+		'super_church': ['cathedral', 3],
+		'cathedral': ['small_chest', 3],
+		'super_cathedral': ['small_chest', 3],
 	}
 	var upgrade = upgrade_for_type.get(type, [null, 0])
 
 	if quantity >= upgrade[1]:
-		return upgrade[0]
+		return 'super_' + upgrade[0] if can_super(upgrade[0], quantity) else upgrade[0]
 	else:
 		return null
+
+
+func can_types_group(type1, type2):
+	if type1 == type2:
+		return true
+	
+	if type1.length() > type2.length():
+		return 'super_' + type2 == type1
+	elif type2.length() < type2.length():
+		return 'super_' + type1 == type2
+	else:
+		return false
+
+
+func can_super(type, quantity):
+	var can_super = [
+		'bush',
+		'tree',
+		'hut',
+		'house',
+		'mansion',
+		'castle',
+		'floating_castle',
+		'church',
+		'cathedral',
+	]
+
+	return quantity > 3 and type in can_super
