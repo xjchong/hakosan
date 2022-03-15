@@ -42,6 +42,17 @@ func _input(event):
 				current_piece.unhighlight()
 				current_piece.position = get_global_mouse_position()
 	elif event is InputEventMouseButton:
+		if event.button_index == BUTTON_RIGHT and not event.pressed:
+			var stored_piece_type = board.store_piece(current_piece.type, board.storage_positions[0])
+			
+			if stored_piece_type != 'error':
+				current_piece.queue_free()
+				AudioManager.play(Audio.STORE)
+
+			if stored_piece_type == null:
+				set_next_piece()
+			else:
+				set_next_piece(stored_piece_type)
 		if event.button_index == BUTTON_LEFT and not event.pressed:
 			var action_type = board.get_action_type(current_piece)
 
