@@ -3,6 +3,9 @@ extends Node2D
 
 onready var board = $Board as Board
 onready var score_label = $ScoreLabel as Label
+onready var game_over_label = $GameOverLabel as Label
+onready var board_area = $BoardArea as PanelContainer
+onready var new_game_button = $NewGameButton as Button
 
 const Piece = preload('res://Piece.tscn')
 const ToastText = preload('res://ToastText.tscn')
@@ -16,6 +19,12 @@ func _ready():
 		set_next_piece()
 
 	score_label.text = String(score)
+
+	new_game_button.connect('pressed', self, 'reset_game')
+	board_area.connect('mouse_entered', self, 'on_mouse_entered_board_area')
+	board_area.connect('mouse_exited', self, 'on_mouse_exited_board_area')
+
+	handle_game_over()
 
 
 func _input(event):
@@ -71,6 +80,8 @@ func _input(event):
 
 			SaveManager.save_game(self)
 
+			handle_game_over()
+
 func increase_score(value):
 	score += value
 	score_label.text = String(score)
@@ -113,5 +124,66 @@ func get_next_piece_type():
 			return chance[0]
 	
 	return 'bear'
+
+
+func is_game_over():
+	for x in board.columns:
+		for y in board.rows:
+			var piece = board.board[x][y]
+
+			if piece == null:
+				return false
+			
+			if piece.type == 'small_chest' or piece.type == 'large_chest':
+				return false
 	
+	if current_piece != null and current_piece.type == 'hammer':
+		return false
+
+	if board.stored_piece == null or board.stored_piece.type == 'hammer':
+		return false
 	
+	return true
+
+
+func handle_game_over():
+	if is_game_over():
+		game_over_label.visible = true
+	else:
+		game_over_label.visible = false
+
+
+func reset_game():
+	if current_piece:
+		current_piece.queue_free()
+		current_piece = null
+	
+	if board.stored_piece:
+		board.stored_piece.queue_free()
+		board.stored_piece = null
+	
+	for x in board.columns:
+		for y in board.rows:
+			var piece = board.board[x][y]
+
+			if piece:
+				piece.queue_free()
+			
+			board.board[x][y] = null
+	
+	decrease_score(score)
+	set_next_piece()
+	board.setup_pieces()
+	game_over_label.visible = false
+
+	SaveManager.save_game(self)
+
+
+func on_mouse_entered_board_area():
+	if current_piece != null:
+		current_piece.visible = true
+
+
+func on_mouse_exited_board_area():
+	if current_piece != null:
+		current_piece.visible = false
