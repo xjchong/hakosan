@@ -81,38 +81,62 @@ func place_piece(type, position = get_mouse_to_board_position(), should_fx = tru
 
 	if type == 'crystal':
 		type = get_wildcard_type(position)
+	
+	var placed_piece = Piece.instance()
+	add_child(placed_piece)
+	placed_piece.set_type(type)
+	placed_piece.position = get_position_from_board_position(position)
+	board[position.x][position.y] = placed_piece
 
-	var meld = get_meld(type, position)
-	var value = PieceCompanion.get_value_for_type(type)
+	var value = meld_at_position(position, should_fx)
 
-	if meld[0] == type:
-		var piece = Piece.instance()
-		add_child(piece)
-		piece.set_type(type)
-		piece.position = get_position_from_board_position(position)
-		board[position.x][position.y] = piece
-	else: 
+	# No meld happened.
+	if value == null:
+		value = placed_piece.get_value()
+
+		if should_fx and value > 0:
+			toast('+%d' % value, position)
+
+	return value
+
+
+func meld_at_position(position, should_fx = true):
+	if position == null:
+		return null
+	
+	var piece = board[position.x][position.y]
+
+	if piece == null:
+		return null
+	
+	var meld = get_meld(piece.type, position)
+
+	if meld[0] == piece.type:
+		return null
+	else:
 		for meld_position in meld[1]:
 			if meld_position != position:
 				var meld_piece = board[meld_position.x][meld_position.y]
 				meld_piece.meld(get_position_from_board_position(position))
 				board[meld_position.x][meld_position.y] = null
-			
-		var piece = Piece.instance()
-		add_child(piece)
-		piece.set_type(meld[0])
-		piece.position = get_position_from_board_position(position)
-		board[position.x][position.y] = piece
+		
+		piece.queue_free()
 
-		value += piece.get_value()
+		var new_piece = Piece.instance()
+		add_child(new_piece)
+		new_piece.set_type(meld[0])
+		new_piece.position = get_position_from_board_position(position)
+		board[position.x][position.y] = new_piece
+
+		var value = new_piece.get_value()
 
 		if should_fx:
 			AudioManager.play(Audio.MELD)
 
-	if should_fx and value > 0:
-		toast('+%d' % value, position)
-	
-	return value
+			if value > 0:
+				toast('+%d' % value, position)
+		
+		return value
 
 
 func toast(text, position):
@@ -301,7 +325,7 @@ func trap_bears():
 						bear.set_type('tombstone')
 
 
-func meld_tombstoneyards():
+func meld_tombstones():
 	var score = 0
 
 	for y in rows:
@@ -322,9 +346,13 @@ func meld_tombstoneyards():
 					newest_tombstone = tombstone
 					newest_tombstone_position = tombstone_position
 			
-			newest_tombstone.queue_free()
-			board[newest_tombstone_position.x][newest_tombstone_position.y] = null
-			score += place_piece('tombstone', newest_tombstone_position)
+			var meld_value = meld_at_position(newest_tombstone_position)
+			
+			if meld_value != null:
+				score += meld_value
+			# newest_tombstone.queue_free()
+			# board[newest_tombstone_position.x][newest_tombstone_position.y] = null
+			# score += place_piece('tombstone', newest_tombstone_position)
 	
 	return score
 

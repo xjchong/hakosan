@@ -57,7 +57,7 @@ func _input(event):
 						set_next_piece()
 						board.move_bears()
 						board.trap_bears()
-						increase_score(value + board.meld_tombstoneyards())
+						increase_score(value + board.meld_tombstones())
 
 					AudioManager.play(Audio.PLACE)
 				'hammer':
@@ -70,7 +70,7 @@ func _input(event):
 						set_next_piece()
 						board.move_bears()
 						board.trap_bears()
-						increase_score(board.meld_tombstoneyards())
+						increase_score(board.meld_tombstones())
 				'store':
 					var stored_piece_type = board.store_piece(current_piece.type)
 					
@@ -122,7 +122,7 @@ func get_next_piece_type():
 	var chance_acc = 0
 
 	chances.append(['grass', 0.6])
-	chances.append(['bush', 0.15])
+	chances.append(['tombstone', 0.15])
 	chances.append(['tree', 0.03])
 	chances.append(['hut', 0.01])
 	chances.append(['crystal', 0.03])

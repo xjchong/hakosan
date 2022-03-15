@@ -40,6 +40,7 @@ static func get_value_for_type(_type):
 
 func _ready():
 	timestamp = OS.get_ticks_msec()
+	label.text = String(timestamp / 1000)
 	tween_pulse.connect('tween_all_completed', self, 'play_tween_pulse')
 	tween_meld.connect('tween_all_completed', self, 'queue_free')
 
@@ -87,10 +88,6 @@ func meld(to):
 	tween_meld.interpolate_property(self, 'position', position, to, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN)
 	tween_meld.interpolate_property(self, 'modulate', Color(1, 1, 1, 1), Color(1, 1, 1, 0), 0.1)
 	tween_meld.start()
-	
-	
-func set_label():
-	label.text = type
 
 
 func set_appearance():
