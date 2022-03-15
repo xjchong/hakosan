@@ -148,12 +148,16 @@ func is_game_over():
 
 func handle_game_over():
 	if is_game_over():
-		game_over_label.visible = true
+		if game_over_label.visible == false:
+			game_over_label.visible = true
+			AudioManager.play(Audio.GAME_OVER)
 	else:
 		game_over_label.visible = false
 
 
 func reset_game():
+	AudioManager.play(Audio.UI_CLICK)
+
 	if current_piece:
 		current_piece.queue_free()
 		current_piece = null
