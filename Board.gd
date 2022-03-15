@@ -333,6 +333,7 @@ func get_wildcard_type(position):
 	var neighbors = get_neighbors(position)
 	var tried_types = []
 	var best_type = null
+	var best_meld_value = 0
 	var best_meld_size = 0
 
 	for neighbor in neighbors:
@@ -347,15 +348,16 @@ func get_wildcard_type(position):
 			tried_types.append(piece.type)
 
 		var meld = get_meld(piece.type, position)
-		var best_value = PieceCompanion.get_value_for_type(best_type)
 		var meld_value = PieceCompanion.get_value_for_type(meld[0])
+		var meld_size = meld[1].size()
 
 		if meld[0] == piece.type:
 			# Meld was unsuccessful with this type.
 			continue
-		elif meld_value > best_value or (meld_value == best_value and meld[1].size() > best_meld_size):
+		elif meld_value > best_meld_value or (meld_value == best_meld_value and meld_size > best_meld_size):
 			best_type = piece.type
-			best_meld_size = meld[1].size()
+			best_meld_value = meld_value
+			best_meld_size = meld_size
 	
 	if best_type == null or best_type == 'crystal':
 		return 'rock'
