@@ -32,6 +32,17 @@ theme = SubResource( 2 )
 text = "999999999"
 align = 2
 
+[node name="HighscoreLabel" type="Label" parent="."]
+margin_left = 345.0
+margin_top = 560.0
+margin_right = 426.0
+margin_bottom = 576.0
+rect_scale = Vector2( 2, 2 )
+theme = SubResource( 2 )
+custom_colors/font_color = Color( 0.745098, 0.745098, 0.745098, 1 )
+text = "999999999"
+align = 2
+
 [node name="GameOverLabel" type="Label" parent="."]
 margin_left = 199.0
 margin_top = 16.0

@@ -41,6 +41,7 @@ config/icon="res://icon.png"
 AudioManager="*res://AudioManager.tscn"
 Audio="*res://Audio.gd"
 SaveManager="*res://SaveManager.tscn"
+SettingsManager="*res://SettingsManager.tscn"
 
 [display]
 

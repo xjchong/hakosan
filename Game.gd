@@ -3,6 +3,7 @@ extends Node2D
 
 onready var board = $Board as Board
 onready var score_label = $ScoreLabel as Label
+onready var highscore_label = $HighscoreLabel as Label
 onready var game_over_label = $GameOverLabel as Label
 onready var board_area = $BoardArea as PanelContainer
 onready var new_game_button = $NewGameButton as Button
@@ -12,6 +13,7 @@ const ToastText = preload('res://ToastText.tscn')
 
 var current_piece = null
 var score = 0
+var highscore = 0
 
 func _ready():
 	if not SaveManager.load_game(self):
@@ -19,6 +21,9 @@ func _ready():
 		set_next_piece()
 
 	score_label.text = String(score)
+
+	highscore = SettingsManager.load_setting('highscore', 'value', 0)
+	highscore_label.text = String(highscore)
 
 	new_game_button.connect('pressed', self, 'reset_game')
 	board_area.connect('mouse_entered', self, 'on_mouse_entered_board_area')
@@ -82,9 +87,15 @@ func _input(event):
 
 			handle_game_over()
 
+
 func increase_score(value):
 	score += value
 	score_label.text = String(score)
+	
+	if score > highscore:
+		highscore = score
+		highscore_label.text = String(highscore)
+		SettingsManager.save_setting(self, 'highscore', 'value', score)
 
 
 func decrease_score(value):
