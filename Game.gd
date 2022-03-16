@@ -7,6 +7,7 @@ onready var highscore_label = $HighscoreLabel as Label
 onready var game_over_label = $GameOverLabel as Label
 onready var board_area = $BoardArea as PanelContainer
 onready var new_game_button = $NewGameButton as Button
+onready var undo_button = $UndoButton as Button
 
 const Piece = preload('res://Piece.tscn')
 const ToastText = preload('res://ToastText.tscn')
@@ -15,8 +16,15 @@ var current_piece = null
 var score = 0
 var highscore = 0
 
+var rng = RandomNumberGenerator.new()
+var rng_seed = null
+
 func _ready():
+	randomize()
+	rng_seed = randi()
+
 	if not SaveManager.load_game(self):
+		rng.seed = rng_seed
 		board.setup_pieces()
 		set_next_piece()
 
@@ -26,8 +34,11 @@ func _ready():
 	highscore_label.text = String(highscore)
 
 	new_game_button.connect('pressed', self, 'reset_game')
+	undo_button.connect('pressed', self, 'undo')
 	board_area.connect('mouse_entered', self, 'on_mouse_entered_board_area')
 	board_area.connect('mouse_exited', self, 'on_mouse_exited_board_area')
+
+	undo_button.visible = SaveManager.does_save_exist('undo')
 
 	handle_game_over()
 
@@ -58,9 +69,11 @@ func _input(event):
 
 			match action_type:
 				'loot':
+					SaveManager.save_game(self, 'undo')
 					board.loot_piece()
 					AudioManager.play(Audio.LOOT)
 				'place':
+					SaveManager.save_game(self, 'undo')
 					var value = board.place_piece(current_piece.type)
 
 					if value != null:
@@ -72,6 +85,7 @@ func _input(event):
 
 					AudioManager.play(Audio.PLACE)
 				'hammer':
+					SaveManager.save_game(self, 'undo')
 					var value = board.hammer_piece()
 
 					if value != null:
@@ -95,6 +109,9 @@ func _input(event):
 						set_next_piece(stored_piece_type)
 
 			SaveManager.save_game(self)
+
+			if action_type != null:
+				undo_button.visible = SaveManager.does_save_exist('undo')
 
 			handle_game_over()
 
@@ -128,7 +145,7 @@ func set_next_piece(type = get_next_piece_type()):
 
 
 func get_next_piece_type():
-	var roll = randf()
+	var roll = rng.randf()
 	var chances = []
 	var chance_acc = 0
 
@@ -201,8 +218,25 @@ func reset_game():
 	set_next_piece()
 	board.setup_pieces()
 	game_over_label.visible = false
+	rng_seed = randi()
+	rng.seed = rng_seed
+	rng.state = randi()
+	board.rng_seed = randi()
+	board.rng.seed = board.rng_seed
+	board.rng.state = randi()
 
+	SaveManager.delete_save('undo')
 	SaveManager.save_game(self)
+
+	undo_button.visible = false
+
+
+func undo():
+	AudioManager.play(Audio.UI_CLICK)
+	SaveManager.load_game(self, 'undo')
+	SaveManager.save_game(self)
+	SaveManager.delete_save('undo')
+	undo_button.visible = false
 
 
 func on_mouse_entered_board_area():

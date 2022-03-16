@@ -22,7 +22,15 @@ var stored_piece = null
 var hover_position = null
 var hover_piece_type = null
 
+var rng = RandomNumberGenerator.new()
+var rng_seed = null
+
+
 func _ready():
+	randomize()
+	rng_seed = randi()
+	rng.seed = rng_seed
+
 	background.set_size(Vector2(PIECE_SIZE * columns, PIECE_SIZE * rows))
 
 	for x in columns:
@@ -33,8 +41,6 @@ func _ready():
 
 
 func setup_pieces():
-	randomize()
-
 	for x in STANDARD_COLUMNS:
 		for y in STANDARD_ROWS:
 			var position = Vector2(x, y)
@@ -276,12 +282,12 @@ func move_bears():
 			if piece != null and piece.type == 'bear':
 				bear_positions.append(Vector2(x, y))
 	
-	bear_positions.shuffle()
+	rng_shuffle(bear_positions)
 
 	# Attempt to move each of the bears on the the board.
 	for position in bear_positions:
 		var neighbors = get_neighbors(position)
-		neighbors.shuffle()
+		rng_shuffle(neighbors)
 
 		for neighbor in neighbors:
 			if not is_position_occupied(neighbor):
@@ -437,7 +443,7 @@ func get_neighbors(position):
 	
 
 func get_starting_piece_type():
-	var roll = randf()
+	var roll = rng.randf()
 	var chances = []
 	var chance_acc = 0
 
@@ -517,3 +523,14 @@ func can_super(type, quantity):
 	]
 
 	return quantity > 3 and type in can_super
+
+
+func rng_shuffle(list):
+	var n = list.size()
+	for i in range(0, n - 2):
+		var j = rng.randi_range(0, n - 1)
+		var swap = list[i]
+
+		list[i] = list[j]
+		list[j] = swap
+
