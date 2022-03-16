@@ -21,9 +21,9 @@ var rng_seed = null
 
 func _ready():
 	randomize()
+	rng.seed = randi()
 
 	if not SaveManager.load_game(self):
-		rng.seed = randi()
 		board.setup_pieces()
 		set_next_piece()
 
