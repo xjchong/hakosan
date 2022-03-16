@@ -118,11 +118,6 @@ func _input(event):
 func increase_score(value):
 	score += value
 	score_label.text = String(score)
-	
-	if score > highscore:
-		highscore = score
-		highscore_label.text = String(highscore)
-		SettingsManager.save_setting(self, 'highscore', 'value', score)
 
 
 func decrease_score(value):
@@ -189,6 +184,11 @@ func handle_game_over():
 		if game_over_label.visible == false:
 			game_over_label.visible = true
 			AudioManager.play(Audio.GAME_OVER)
+	
+		if score > highscore:
+			highscore = score
+			highscore_label.text = String(highscore)
+			SettingsManager.save_setting(self, 'highscore', 'value', score)
 	else:
 		game_over_label.visible = false
 
