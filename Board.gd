@@ -121,7 +121,7 @@ func meld_at_position(position, should_fx = true):
 		for meld_position in meld[1]:
 			if meld_position != position:
 				var meld_piece = board[meld_position.x][meld_position.y]
-				meld_piece.meld(get_position_from_board_position(position))
+				meld_piece.meld(get_position_from_board_position(position), should_fx)
 				board[meld_position.x][meld_position.y] = null
 		
 		piece.queue_free()

@@ -91,10 +91,13 @@ func move(to):
 	tween_move.start()
 
 
-func meld(to):
-	tween_meld.interpolate_property(self, 'position', position, to, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN)
-	tween_meld.interpolate_property(self, 'modulate', Color(1, 1, 1, 1), Color(1, 1, 1, 0), 0.1)
-	tween_meld.start()
+func meld(to, should_fx = true):
+	if should_fx:
+		tween_meld.interpolate_property(self, 'position', position, to, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN)
+		tween_meld.interpolate_property(self, 'modulate', Color(1, 1, 1, 1), Color(1, 1, 1, 0), 0.1)
+		tween_meld.start()
+	else:
+		queue_free()
 
 
 func set_appearance():
