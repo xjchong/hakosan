@@ -187,7 +187,6 @@ func handle_game_over():
 	
 		if score > highscore:
 			highscore = score
-			highscore_label.text = String(highscore)
 			SettingsManager.save_setting(self, 'highscore', 'value', score)
 	else:
 		game_over_label.visible = false
@@ -226,6 +225,7 @@ func reset_game():
 	SaveManager.save_game(self)
 
 	undo_button.visible = false
+	highscore_label.text = String(highscore)
 
 
 func undo():
@@ -233,6 +233,7 @@ func undo():
 	SaveManager.load_game(self, 'undo')
 	SaveManager.save_game(self)
 	SaveManager.delete_save('undo')
+	score_label.text = String(score)
 	undo_button.visible = false
 
 
