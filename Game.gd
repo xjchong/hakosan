@@ -21,10 +21,9 @@ var rng_seed = null
 
 func _ready():
 	randomize()
-	rng_seed = randi()
 
 	if not SaveManager.load_game(self):
-		rng.seed = rng_seed
+		rng.seed = randi()
 		board.setup_pieces()
 		set_next_piece()
 
@@ -218,11 +217,9 @@ func reset_game():
 	set_next_piece()
 	board.setup_pieces()
 	game_over_label.visible = false
-	rng_seed = randi()
-	rng.seed = rng_seed
+	rng.seed = randi()
 	rng.state = randi()
-	board.rng_seed = randi()
-	board.rng.seed = board.rng_seed
+	board.rng.seed = randi()
 	board.rng.state = randi()
 
 	SaveManager.delete_save('undo')

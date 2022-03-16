@@ -23,13 +23,11 @@ var hover_position = null
 var hover_piece_type = null
 
 var rng = RandomNumberGenerator.new()
-var rng_seed = null
 
 
 func _ready():
 	randomize()
-	rng_seed = randi()
-	rng.seed = rng_seed
+	rng.seed = randi()
 
 	background.set_size(Vector2(PIECE_SIZE * columns, PIECE_SIZE * rows))
 

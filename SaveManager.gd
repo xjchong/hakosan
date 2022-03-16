@@ -34,9 +34,9 @@ func save_game(game: Game, name = 'game'):
 		'stored_piece_type' : null if game.board.stored_piece == null else game.board.stored_piece.type,
 		'current_piece_type': null if game.current_piece == null else game.current_piece.type,
 		'score': game.score,
-		'game_rng_seed': game.rng_seed,
+		'game_rng_seed': game.rng.seed,
 		'game_rng_state': game.rng.state,
-		'board_rng_seed': game.board.rng_seed,
+		'board_rng_seed': game.board.rng.seed,
 		'board_rng_state': game.board.rng.state,
 	}
 
@@ -61,12 +61,10 @@ func load_game(game: Game, name = 'game'):
 	game.board.columns = data.get('columns', Board.STANDARD_COLUMNS)
 	game.score = data.get('score', 0)
 
-	game.rng_seed = data.get('game_rng_seed', randi())
-	game.rng.seed = data.get('game_rng_seed', game.rng_seed)
+	game.rng.seed = data.get('game_rng_seed', randi())
 	game.rng.state = data.get('game_rng_state', 0)
 
-	game.board.rng_seed = data.get('board_rng_seed', randi())
-	game.board.rng.seed = data.get('board_rng_seed', game.board.rng_seed)
+	game.board.rng.seed = data.get('board_rng_seed', randi())
 	game.board.rng.state = data.get('board_rng_state', 0)
 
 	if game.current_piece:
