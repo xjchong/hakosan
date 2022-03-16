@@ -163,6 +163,7 @@ func store_piece(type, position = get_mouse_to_board_position()):
 
 	stored_piece = Piece.instance()
 	stored_piece.position = position + PIECE_OFFSET
+	stored_piece.scale = Vector2(0.9, 0.9)
 	add_child(stored_piece)
 	stored_piece.set_type(type)
 
