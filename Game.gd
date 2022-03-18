@@ -240,6 +240,7 @@ func undo():
 	SaveManager.delete_save('undo')
 	score_label.text = String(score)
 	undo_button.visible = false
+	handle_game_over()
 
 
 func on_mouse_entered_board_area():
