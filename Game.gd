@@ -15,6 +15,7 @@ const ToastText = preload('res://ToastText.tscn')
 var current_piece = null
 var score = 0
 var highscore = 0
+var turn = 0
 
 var rng = RandomNumberGenerator.new()
 var rng_seed = null
@@ -70,22 +71,24 @@ func _input(event):
 				'loot':
 					SaveManager.save_game(self, 'undo')
 					board.loot_piece()
+					turn += 1
 					AudioManager.play(Audio.LOOT)
 				'place':
 					SaveManager.save_game(self, 'undo')
-					var value = board.place_piece(current_piece.type)
+					var value = board.place_piece(current_piece.type, turn)
 
 					if value != null:
 						current_piece.queue_free()
 						set_next_piece()
 						board.move_bears()
 						board.trap_bears()
-						increase_score(value + board.meld_tombstones())
+						increase_score(value + board.meld_tombstones(turn))
 
+					turn += 1
 					AudioManager.play(Audio.PLACE)
 				'hammer':
 					SaveManager.save_game(self, 'undo')
-					var value = board.hammer_piece()
+					var value = board.hammer_piece(turn)
 
 					if value != null:
 						AudioManager.play(Audio.REMOVE)
@@ -94,7 +97,9 @@ func _input(event):
 						set_next_piece()
 						board.move_bears()
 						board.trap_bears()
-						increase_score(board.meld_tombstones())
+						increase_score(board.meld_tombstones(turn))
+
+					turn += 1
 				'store':
 					var stored_piece_type = board.store_piece(current_piece.type)
 					

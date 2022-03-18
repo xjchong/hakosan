@@ -9,8 +9,8 @@ onready var tween_move = $TweenMove as Tween
 onready var tween_meld = $TweenMeld as Tween
 
 var type = 'unknown'
+var turn = 0
 var pulse_positions = null
-var timestamp = 0
 
 
 static func get_value_for_type(_type):
@@ -47,15 +47,19 @@ static func get_value_for_type(_type):
 
 
 func _ready():
-	timestamp = OS.get_ticks_msec()
-	label.text = String(timestamp / 1000)
 	tween_pulse.connect('tween_all_completed', self, 'play_tween_pulse')
 	tween_meld.connect('tween_all_completed', self, 'queue_free')
+	label.visible = true
 
 
 func set_type(new_type):
 	type = new_type
 	set_appearance()
+
+
+func set_turn(new_turn):
+	turn = new_turn
+	label.text = String(new_turn)
 
 
 func highlight():

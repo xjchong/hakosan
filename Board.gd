@@ -44,9 +44,9 @@ func setup_pieces():
 			var position = Vector2(x, y)
 
 			if position in STANDARD_STORAGE_POSITIONS:
-				place_piece('storage', position, false)
+				place_piece('storage', 0, position, false)
 			else: 
-				place_piece(get_starting_piece_type(), position, false)
+				place_piece(get_starting_piece_type(), 0, position, false)
 	
 	trap_bears()
 
@@ -79,20 +79,15 @@ func loot_piece(position = get_mouse_to_board_position()):
 			return
 
 
-func place_piece(type, position = get_mouse_to_board_position(), should_fx = true):
+func place_piece(type, turn: int, position = get_mouse_to_board_position(), should_fx = true):
 	if is_position_occupied(position) or type == null:
 		return null
 
 	if type == 'crystal':
 		type = get_wildcard_type(position)
 	
-	var placed_piece = Piece.instance()
-	add_child(placed_piece)
-	placed_piece.set_type(type)
-	placed_piece.position = get_position_from_board_position(position)
-	board[position.x][position.y] = placed_piece
-
-	var value = meld_at_position(position, should_fx)
+	var placed_piece = _place_piece(type, turn, position)
+	var value = meld_at_position(position, turn, should_fx)
 
 	# No meld happened.
 	if value == null:
@@ -104,10 +99,24 @@ func place_piece(type, position = get_mouse_to_board_position(), should_fx = tru
 	return value
 
 
-func meld_at_position(position, should_fx = true):
-	if position == null:
-		return null
-	
+func _place_piece(type: String, turn: int, position: Vector2):
+	var current_piece = board[position.x][position.y]
+
+	if current_piece != null:
+		current_piece.queue_free()
+		board[position.x][position.y] = null
+
+	var new_piece = Piece.instance()
+	new_piece.position = get_position_from_board_position(position)
+	add_child(new_piece)
+	new_piece.set_type(type)
+	new_piece.set_turn(turn)
+	board[position.x][position.y] = new_piece
+
+	return new_piece
+
+
+func meld_at_position(position, turn, should_fx = true):
 	var piece = board[position.x][position.y]
 
 	if piece == null:
@@ -126,12 +135,7 @@ func meld_at_position(position, should_fx = true):
 		
 		piece.queue_free()
 
-		var new_piece = Piece.instance()
-		add_child(new_piece)
-		new_piece.set_type(meld[0])
-		new_piece.position = get_position_from_board_position(position)
-		board[position.x][position.y] = new_piece
-
+		var new_piece = _place_piece(meld[0], turn, position)
 		var value = new_piece.get_value()
 
 		if should_fx:
@@ -170,7 +174,7 @@ func store_piece(type, position = get_mouse_to_board_position()):
 	return old_stored_piece_type
 
 
-func hammer_piece(position = get_mouse_to_board_position()):
+func hammer_piece(turn, position = get_mouse_to_board_position()):
 	if not is_position_occupied(position) or position in storage_positions:
 		return null
 
@@ -183,10 +187,10 @@ func hammer_piece(position = get_mouse_to_board_position()):
 
 	match type:
 		'mountain':
-			value = -place_piece('small_chest', position)
+			value = -place_piece('small_chest', turn, position)
 			return value
 		'bear':
-			value = place_piece('tombstone', position)
+			value = place_piece('tombstone', turn, position)
 			return value
 		_: 
 			if value > 0:
@@ -330,7 +334,7 @@ func trap_bears():
 						bear.set_type('tombstone')
 
 
-func meld_tombstones():
+func meld_tombstones(turn):
 	var score = 0
 
 	for y in rows:
@@ -347,11 +351,11 @@ func meld_tombstones():
 			for tombstone_position in group:
 				var tombstone = board[tombstone_position.x][tombstone_position.y]
 
-				if tombstone != null and tombstone.type == 'tombstone' and tombstone.timestamp > newest_tombstone.timestamp:
+				if tombstone != null and tombstone.type == 'tombstone' and tombstone.turn > newest_tombstone.turn:
 					newest_tombstone = tombstone
 					newest_tombstone_position = tombstone_position
 			
-			var meld_value = meld_at_position(newest_tombstone_position)
+			var meld_value = meld_at_position(newest_tombstone_position, turn)
 			
 			if meld_value != null:
 				score += meld_value

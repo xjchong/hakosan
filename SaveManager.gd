@@ -1,7 +1,7 @@
 extends Node
 
 
-const SAVE_VERSION = 0
+const SAVE_VERSION = 1
 const SAVE_PATH = 'user://'
 
 
@@ -16,26 +16,31 @@ func save_game(game: Game, name = 'game'):
 	var save_file = File.new()
 	var rows = game.board.rows
 	var columns = game.board.columns
-	var board_types = []
+	var board = []
 
 	for x in columns:
-		board_types.append([])
+		board.append([])
 
 		for y in rows:
-			board_types[x].append(null)
+			board[x].append(null)
 
 			var piece = game.board.board[x][y]
 
-			board_types[x][y] = null if piece == null else piece.type
+			if piece != null:
+				board[x][y] = {
+					'type': piece.type,
+					'turn': piece.turn
+				}
 
 	var data = {
 		'save_version': SAVE_VERSION,
 		'rows': rows,
 		'columns': columns,
 		'storage_positions': game.board.storage_positions,
-		'board_types': board_types,
+		'board': board,
 		'stored_piece_type' : null if game.board.stored_piece == null else game.board.stored_piece.type,
 		'current_piece_type': null if game.current_piece == null else game.current_piece.type,
+		'turn': game.turn,
 		'score': game.score,
 		'game_rng_seed': String(game.rng.seed), # Long integers are converted to string, because parsing converts ints to float. Rounding errors!
 		'game_rng_state': String(game.rng.state),
@@ -60,9 +65,13 @@ func load_game(game: Game, name = 'game'):
 
 	var data = parse_json(save_file.get_line())
 
+	if data['save_version'] == 0:
+		upgrade_v0(data)
+
 	game.board.rows = data.get('rows', Board.STANDARD_ROWS)
 	game.board.columns = data.get('columns', Board.STANDARD_COLUMNS)
 	game.score = data.get('score', 0)
+	game.turn = data.get('turn', 0)
 
 	game.rng.seed = int(data.get('game_rng_seed', randi()))
 	game.rng.state = int(data.get('game_rng_state', randi()))
@@ -80,7 +89,11 @@ func load_game(game: Game, name = 'game'):
 			if game.board.board[x][y]:
 				game.board.board[x][y].queue_free()
 				game.board.board[x][y] = null
-			game.board.place_piece(data['board_types'][x][y], Vector2(x, y), false)
+
+			var piece = data['board'][x][y]
+
+			if piece != null:
+				game.board.place_piece(piece['type'], piece['turn'], Vector2(x, y), false)
 	
 	if game.board.stored_piece:
 		game.board.stored_piece.queue_free()
@@ -108,3 +121,36 @@ func does_save_exist(name):
 
 func get_save_file_path(name):
 	return SAVE_PATH + name + '.save'
+
+
+func upgrade_v0(data):
+	# Need to infer what 'board' should be from 'board_types' (deprecated).
+	# In v0, we only have board types. But in v1 we should have a 2d array 'board',
+	# where each entry is either null or a dictionary that describes what piece is there.__data__
+	# A piece has both a 'type' and a 'turn'.
+	# We should also add in the turn field for good measure.
+
+	data['save_version'] = 1
+
+	var rows = data['rows']
+	var columns = data['columns']
+	var board_types = data['board_types']
+	var board = []
+
+	for x in columns:
+		board.append([])
+
+		for y in rows:
+			board[x].append(null)
+
+			var type = board_types[x][y]
+
+			if type != null:
+				board[x][y] = {
+					'type': type,
+					'turn': 0,
+				}
+
+	data['board'] = board
+
+	return data
