@@ -49,7 +49,6 @@ static func get_value_for_type(_type):
 func _ready():
 	tween_pulse.connect('tween_all_completed', self, 'play_tween_pulse')
 	tween_meld.connect('tween_all_completed', self, 'queue_free')
-	label.visible = true
 
 
 func set_type(new_type):
