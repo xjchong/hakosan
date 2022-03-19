@@ -491,17 +491,17 @@ func get_neighbors(position):
 
 	var neighbors = []
 
-	if position.x > 0:
-		neighbors.append(position + Vector2.LEFT)
-	
-	if position.y > 0:
-		neighbors.append(position + Vector2.UP)
-
 	if position.x < columns - 1:
 		neighbors.append(position + Vector2.RIGHT)
 
 	if position.y < rows - 1:
 		neighbors.append(position + Vector2.DOWN)
+
+	if position.x > 0:
+		neighbors.append(position + Vector2.LEFT)
+	
+	if position.y > 0:
+		neighbors.append(position + Vector2.UP)
 
 	return neighbors
 	
