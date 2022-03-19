@@ -9,6 +9,7 @@ onready var board_area = $BoardArea as PanelContainer
 onready var recipe_overlay = $RecipeOverlay as RecipeOverlay
 onready var new_game_button = $NewGameButton as Button
 onready var undo_button = $UndoButton as Button
+onready var board_theme_button = $BoardThemeButton as Button
 
 const Piece = preload('res://Piece.tscn')
 const ToastText = preload('res://ToastText.tscn')
@@ -38,6 +39,7 @@ func _ready():
 	undo_button.connect('pressed', self, 'undo')
 	board_area.connect('mouse_entered', self, 'on_mouse_entered_board_area')
 	board_area.connect('mouse_exited', self, 'on_mouse_exited_board_area')
+	board_theme_button.connect('pressed', self, 'cycle_board_theme')
 
 	undo_button.visible = SaveManager.does_save_exist('undo')
 
@@ -274,3 +276,7 @@ func on_mouse_entered_board_area():
 func on_mouse_exited_board_area():
 	if current_piece != null:
 		current_piece.visible = false
+
+
+func cycle_board_theme():
+	board.set_theme()

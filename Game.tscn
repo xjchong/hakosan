@@ -92,3 +92,11 @@ margin_bottom = 575.0
 
 [node name="RecipeOverlay" parent="." instance=ExtResource( 5 )]
 position = Vector2( 107, 523 )
+
+[node name="BoardThemeButton" type="Button" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 93.0
+margin_top = 481.0
+margin_right = 507.0
+margin_bottom = 501.0
+mouse_filter = 1
