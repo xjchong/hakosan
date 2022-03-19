@@ -93,6 +93,8 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT and not event.pressed:
 			var action_type = board.get_action_type(current_piece.type if current_piece else null)
 
+			handle_touchscreen_auto_placement()
+
 			match action_type:
 				'loot':
 					SaveManager.save_game(self, 'undo')
@@ -288,8 +290,6 @@ func on_mouse_entered_board_area():
 func on_mouse_exited_board_area():
 	if current_piece != null:
 		current_piece.visible = false
-
-	handle_touchscreen_auto_placement()
 
 
 func cycle_board_theme():
