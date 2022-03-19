@@ -49,7 +49,7 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion:
 		if current_piece != null and is_instance_valid(current_piece):
-			if board.is_playable(current_piece):
+			if board.is_playable(current_piece.type):
 				board.hover_piece(current_piece)
 			else:
 				board.reset_hover()
@@ -90,7 +90,7 @@ func _input(event):
 			else:
 				set_next_piece(stored_piece_type)
 		if event.button_index == BUTTON_LEFT and not event.pressed:
-			var action_type = board.get_action_type(current_piece)
+			var action_type = board.get_action_type(current_piece.type if current_piece else null)
 
 			match action_type:
 				'loot':
@@ -136,6 +136,12 @@ func _input(event):
 						set_next_piece()
 					else:
 						set_next_piece(stored_piece_type)
+
+			if OS.has_touchscreen_ui_hint():
+				var closest_playable_position = board.get_closest_playable_position(current_piece.type)
+				current_piece.position = board.get_position_from_board_position(closest_playable_position)
+				if board.is_playable(current_piece.type, closest_playable_position):
+					board.hover_piece(current_piece, closest_playable_position)
 
 			SaveManager.save_game(self)
 

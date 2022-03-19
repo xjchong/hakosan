@@ -212,7 +212,41 @@ func hammer_piece(turn, position = get_mouse_to_board_position()):
 
 
 func is_position_occupied(position):
+	if position.x < 0 or position.y < 0 or position.x >= columns or position.y >= rows:
+		return true
+
 	return board[position.x][position.y] != null
+
+
+func get_closest_playable_position(type, position = get_mouse_to_board_position()):
+	if position == null:
+		return Vector2.ZERO
+
+	if is_playable(type, position):
+		return position
+	
+	for neighbor in get_neighbors(position):
+		if is_playable(type, neighbor) and not neighbor in storage_positions:
+			return neighbor
+	
+	var closest_position = storage_positions[0]
+	var closest_distance = 9999
+	
+	for x in columns:
+		for y in rows:
+			var other_position = Vector2(x, y)
+
+			if other_position in storage_positions:
+				continue
+
+			if is_playable(type, other_position):
+				var distance = position.distance_to(other_position)
+
+				if distance < closest_distance:
+					closest_distance = distance
+					closest_position = other_position
+	
+	return closest_position
 
 
 func get_mouse_to_board_position():
@@ -227,11 +261,11 @@ func get_mouse_to_board_position():
 		return board_position
 
 
-func is_playable(piece, position = get_mouse_to_board_position()):
-	return get_action_type(piece, position) != null
+func is_playable(type, position = get_mouse_to_board_position()):
+	return get_action_type(type, position) != null
 
 
-func get_action_type(piece, position = get_mouse_to_board_position()):
+func get_action_type(type, position = get_mouse_to_board_position()):
 	if position == null:
 		return null
 	
@@ -241,9 +275,9 @@ func get_action_type(piece, position = get_mouse_to_board_position()):
 		return 'loot'
 	elif position in storage_positions:
 		return 'store'
-	elif piece.type == 'hammer' && is_position_occupied(position):
+	elif type == 'hammer' && is_position_occupied(position):
 		return 'hammer'
-	elif not piece.type == 'hammer' and not is_position_occupied(position):
+	elif not type == 'hammer' and not is_position_occupied(position):
 		return 'place'
 	else:
 		return null
