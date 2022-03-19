@@ -220,7 +220,21 @@ func is_position_occupied(position):
 
 func get_closest_playable_position(type, position = get_mouse_to_board_position()):
 	if position == null:
-		return Vector2.ZERO
+		var most_recent_position = Vector2.ZERO
+		var most_recent_turn = 0
+
+		for x in columns:
+			for y in rows:
+				var piece = board[x][y]
+
+				if piece == null:
+					continue
+
+				if piece.turn > most_recent_turn:
+					most_recent_position = Vector2(x, y)
+					most_recent_turn = piece.turn
+
+		return get_closest_playable_position(type, most_recent_position)
 
 	if is_playable(type, position):
 		return position
