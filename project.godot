@@ -23,11 +23,17 @@ _global_script_classes=[ {
 "class": "Piece",
 "language": "GDScript",
 "path": "res://Piece.gd"
+}, {
+"base": "Node2D",
+"class": "RecipeOverlay",
+"language": "GDScript",
+"path": "res://RecipeOverlay.gd"
 } ]
 _global_script_class_icons={
 "Board": "",
 "Game": "",
-"Piece": ""
+"Piece": "",
+"RecipeOverlay": ""
 }
 
 [application]

@@ -204,7 +204,7 @@ func is_position_occupied(position):
 
 func get_mouse_to_board_position():
 	var mouse_position = get_local_mouse_position()
-	var board_position = Vector2(int(mouse_position.x / PIECE_SIZE), int(mouse_position.y / PIECE_SIZE))
+	var board_position = Vector2(floor(mouse_position.x / PIECE_SIZE), floor(mouse_position.y / PIECE_SIZE))
 
 	if board_position.x < 0 or board_position.x >= columns:
 		return null

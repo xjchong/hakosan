@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Game.gd" type="Script" id=1]
 [ext_resource path="res://Board.tscn" type="PackedScene" id=2]
 [ext_resource path="res://fonts/Minecraft.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://VolumeControl.tscn" type="PackedScene" id=4]
+[ext_resource path="res://RecipeOverlay.tscn" type="PackedScene" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 font_data = ExtResource( 3 )
@@ -88,3 +89,6 @@ margin_left = 570.0
 margin_top = 575.0
 margin_right = 570.0
 margin_bottom = 575.0
+
+[node name="RecipeOverlay" parent="." instance=ExtResource( 5 )]
+position = Vector2( 107, 523 )

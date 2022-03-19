@@ -134,6 +134,7 @@ func set_appearance():
 		'rock': 17,
 		'mountain': 18,
 		'storage': 34,
+		'arrow': 35,
 	}
 
 	appearance.frame = frame_for_type.get(type, 34)

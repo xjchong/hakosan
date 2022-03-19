@@ -6,6 +6,7 @@ onready var score_label = $ScoreLabel as Label
 onready var highscore_label = $HighscoreLabel as Label
 onready var game_over_label = $GameOverLabel as Label
 onready var board_area = $BoardArea as PanelContainer
+onready var recipe_overlay = $RecipeOverlay as RecipeOverlay
 onready var new_game_button = $NewGameButton as Button
 onready var undo_button = $UndoButton as Button
 
@@ -52,6 +53,28 @@ func _input(event):
 				board.reset_hover()
 				current_piece.unhighlight()
 				current_piece.position = get_global_mouse_position()
+		
+		# Show recipe overlay
+		var board_position = board.get_mouse_to_board_position()
+
+		if board_position != null:
+			var board_piece = board.board[board_position.x][board_position.y]
+
+			if board_piece != null:
+				if board_piece.type == 'storage':
+					var stored_piece = board.stored_piece
+
+					if stored_piece:
+						recipe_overlay.show_recipe(stored_piece.type)
+				else:
+					recipe_overlay.show_recipe(board_piece.type)
+			elif current_piece != null and current_piece.visible:
+				recipe_overlay.show_recipe(current_piece.type)
+			else:
+				recipe_overlay.clear_recipe()
+		else:
+			recipe_overlay.clear_recipe()
+			
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_RIGHT and not event.pressed:
 			var stored_piece_type = board.store_piece(current_piece.type, board.storage_positions[0])
