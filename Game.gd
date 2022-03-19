@@ -277,9 +277,10 @@ func handle_touchscreen_auto_placement():
 	if OS.has_touchscreen_ui_hint():
 		var closest_playable_position = board.get_closest_playable_position(current_piece.type)
 		current_piece.position = board.get_position_from_board_position(closest_playable_position)
+		current_piece.visible = true
+
 		if board.is_playable(current_piece.type, closest_playable_position):
 			board.hover_piece(current_piece, closest_playable_position)
-
 
 
 func on_mouse_entered_board_area():
