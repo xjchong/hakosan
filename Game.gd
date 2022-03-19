@@ -44,6 +44,7 @@ func _ready():
 	undo_button.visible = SaveManager.does_save_exist('undo')
 
 	handle_game_over()
+	handle_touchscreen_auto_placement()
 
 
 func _input(event):
@@ -137,12 +138,7 @@ func _input(event):
 					else:
 						set_next_piece(stored_piece_type)
 
-			if OS.has_touchscreen_ui_hint():
-				var closest_playable_position = board.get_closest_playable_position(current_piece.type)
-				current_piece.position = board.get_position_from_board_position(closest_playable_position)
-				if board.is_playable(current_piece.type, closest_playable_position):
-					board.hover_piece(current_piece, closest_playable_position)
-
+			handle_touchscreen_auto_placement()
 			SaveManager.save_game(self)
 
 			if action_type != null:
@@ -272,6 +268,16 @@ func undo():
 	score_label.text = String(score)
 	undo_button.visible = false
 	handle_game_over()
+	handle_touchscreen_auto_placement()
+
+
+func handle_touchscreen_auto_placement():
+	if OS.has_touchscreen_ui_hint():
+		var closest_playable_position = board.get_closest_playable_position(current_piece.type)
+		current_piece.position = board.get_position_from_board_position(closest_playable_position)
+		if board.is_playable(current_piece.type, closest_playable_position):
+			board.hover_piece(current_piece, closest_playable_position)
+
 
 
 func on_mouse_entered_board_area():
@@ -282,6 +288,8 @@ func on_mouse_entered_board_area():
 func on_mouse_exited_board_area():
 	if current_piece != null:
 		current_piece.visible = false
+
+	handle_touchscreen_auto_placement()
 
 
 func cycle_board_theme():
