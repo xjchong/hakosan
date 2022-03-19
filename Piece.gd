@@ -7,6 +7,7 @@ onready var highlight_rect = $HighlightRect as ColorRect
 onready var tween_pulse = $TweenPulse as Tween
 onready var tween_move = $TweenMove as Tween
 onready var tween_meld = $TweenMeld as Tween
+onready var animation_player = $AnimationPlayer as AnimationPlayer
 
 var type = 'unknown'
 var turn = 0
@@ -62,11 +63,11 @@ func set_turn(new_turn):
 
 
 func highlight():
-	highlight_rect.visible = true
+	animation_player.play('highlight')
 
 
 func unhighlight():
-	highlight_rect.visible = false
+	animation_player.play('RESET')
 
 
 func pulse_on(towards_position):
