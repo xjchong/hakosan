@@ -76,14 +76,6 @@ button_mask = 7
 text = "UNDO"
 flat = true
 
-[node name="BoardArea" type="PanelContainer" parent="."]
-modulate = Color( 1, 1, 1, 0 )
-margin_left = 92.0
-margin_top = 53.0
-margin_right = 508.0
-margin_bottom = 501.0
-mouse_filter = 1
-
 [node name="VolumeControl" parent="." instance=ExtResource( 4 )]
 margin_left = 570.0
 margin_top = 575.0

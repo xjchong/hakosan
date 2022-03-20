@@ -1,7 +1,11 @@
 class_name Board
 extends Node2D
 
+signal mouse_entered
+signal mouse_exited
+
 onready var board_sprite = $BoardSprite as AnimatedSprite
+onready var control = $Control as Control
 
 const Piece = preload('res://Piece.tscn')
 const PieceCompanion = preload('res://Piece.gd')
@@ -37,6 +41,17 @@ func _ready():
 			board[x].append(null)
 	
 	set_theme(SettingsManager.load_setting('theme', 'board', 0))
+
+	control.connect('mouse_entered', self, '_on_Control_mouse_entered')
+	control.connect('mouse_exited', self, '_on_Control_mouse_exited')
+
+
+func _on_Control_mouse_entered():
+	emit_signal('mouse_entered')
+
+
+func _on_Control_mouse_exited():
+	emit_signal('mouse_exited')
 		
 
 func set_theme(index = null):

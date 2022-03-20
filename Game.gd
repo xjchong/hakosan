@@ -5,7 +5,6 @@ onready var board = $Board as Board
 onready var score_label = $ScoreLabel as Label
 onready var highscore_label = $HighscoreLabel as Label
 onready var game_over_label = $GameOverLabel as Label
-onready var board_area = $BoardArea as PanelContainer
 onready var recipe_overlay = $RecipeOverlay as RecipeOverlay
 onready var new_game_button = $NewGameButton as Button
 onready var undo_button = $UndoButton as Button
@@ -37,8 +36,8 @@ func _ready():
 
 	new_game_button.connect('pressed', self, 'reset_game')
 	undo_button.connect('pressed', self, 'undo')
-	board_area.connect('mouse_entered', self, 'on_mouse_entered_board_area')
-	board_area.connect('mouse_exited', self, 'on_mouse_exited_board_area')
+	board.connect('mouse_entered', self, 'on_Board_mouse_entered')
+	board.connect('mouse_exited', self, 'on_Board_mouse_exited')
 	board_theme_button.connect('pressed', self, 'cycle_board_theme')
 
 	undo_button.visible = SaveManager.does_save_exist('undo')
