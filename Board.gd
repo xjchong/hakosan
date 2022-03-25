@@ -54,16 +54,20 @@ func _on_Control_mouse_exited():
 	emit_signal('mouse_exited')
 		
 
-func set_theme(index = null):
-	if index == null:
-		theme_index += 1
-	else:
-		theme_index = index
+func set_theme(_index = null):
+	# TODO: When themes have a proper menu UI, set this properly.
+	# if index == null:
+	# 	theme_index += 1
+	# else:
+	# 	theme_index = index
 	
-	theme_index = theme_index % board_sprite.frames.get_frame_count('default')
-	board_sprite.frame = theme_index
+	# theme_index = theme_index % board_sprite.frames.get_frame_count('default')
+	# board_sprite.frame = theme_index
 
-	SettingsManager.save_setting(self, 'theme', 'board', theme_index)
+	# SettingsManager.save_setting(self, 'theme', 'board', theme_index)
+
+	SettingsManager.save_setting(self, 'theme', 'board', 0)
+	board_sprite.frame = 0
 
 
 func setup_pieces():
