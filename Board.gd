@@ -610,7 +610,7 @@ func can_super(type, quantity):
 
 func rng_shuffle(list):
 	var n = list.size()
-	for i in range(0, n - 2):
+	for i in range(0, n - 1):
 		var j = rng.randi_range(0, n - 1)
 		var swap = list[i]
 
