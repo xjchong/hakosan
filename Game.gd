@@ -282,12 +282,12 @@ func handle_touchscreen_auto_placement():
 			board.hover_piece(current_piece, closest_playable_position)
 
 
-func on_mouse_entered_board_area():
+func on_Board_mouse_entered():
 	if current_piece != null:
 		current_piece.visible = true
 
 
-func on_mouse_exited_board_area():
+func on_Board_mouse_exited():
 	if current_piece != null:
 		current_piece.visible = false
 
