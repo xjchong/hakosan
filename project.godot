@@ -40,7 +40,7 @@ _global_script_class_icons={
 
 config/name="HAKOSAN"
 run/main_scene="res://Game.tscn"
-config/icon="res://icon.png"
+config/icon="res://sprites/hakosan-logo.png"
 
 [autoload]
 
