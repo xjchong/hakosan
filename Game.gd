@@ -34,6 +34,11 @@ func _ready():
 	highscore = SettingsManager.load_setting('highscore', 'value', 0)
 	highscore_label.text = String(highscore)
 
+	# Set the position of the game.
+	# warning-ignore:return_value_discarded
+	get_tree().get_root().connect('size_changed', self, '_recenter')
+	_recenter()
+
 	new_game_button.connect('pressed', self, 'reset_game')
 	undo_button.connect('pressed', self, 'undo')
 	board.connect('mouse_entered', self, 'on_Board_mouse_entered')
@@ -44,6 +49,10 @@ func _ready():
 
 	handle_game_over()
 	handle_touchscreen_auto_placement()
+
+
+func _recenter():
+	position = get_viewport_rect().size / 2 - Vector2(215, 300)
 
 
 func _input(event):
