@@ -44,10 +44,10 @@ config/icon="res://icon.png"
 
 [autoload]
 
-SettingsManager="*res://SettingsManager.tscn"
-SaveManager="*res://SaveManager.tscn"
-AudioManager="*res://AudioManager.tscn"
-Audio="*res://Audio.gd"
+SettingsManager="*res://autoload/SettingsManager.tscn"
+SaveManager="*res://autoload/SaveManager.tscn"
+AudioManager="*res://autoload/AudioManager.tscn"
+Audio="*res://autoload/Audio.gd"
 
 [display]
 
