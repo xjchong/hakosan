@@ -230,6 +230,7 @@ func handle_game_over():
 		if score > highscore:
 			highscore = score
 			SettingsManager.save_setting(self, 'highscore', 'value', score)
+			SaveManager.save_game(self, 'highscore')
 	else:
 		game_over_label.visible = false
 
