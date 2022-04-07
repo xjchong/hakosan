@@ -63,7 +63,7 @@ func _input(event):
 			else:
 				board.reset_hover()
 				current_piece.unhighlight()
-				current_piece.position = get_global_mouse_position()
+				current_piece.position = get_local_mouse_position()
 		
 		# Show recipe overlay
 		var board_position = board.get_mouse_to_board_position()
