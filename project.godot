@@ -51,7 +51,7 @@ Audio="*res://autoload/Audio.gd"
 
 [display]
 
-window/size/width=600
+window/size/width=430
 window/handheld/orientation="portrait"
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
