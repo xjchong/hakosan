@@ -2,7 +2,7 @@ extends Control
 
 
 onready var label = $Label as Label
-onready var slider = $VSlider as VSlider
+onready var slider = $Slider as HSlider
 onready var tween = $Tween as Tween
 
 var is_value_set_initially = false
@@ -13,7 +13,7 @@ func _ready():
 	slider.value = slider.max_value * volume_percent
 
 
-func _on_VSlider_value_changed(value):
+func _on_Slider_value_changed(value):
 	var volume_percent = value / float(slider.max_value)
 
 	SettingsManager.save_setting(self, 'sound_effects', 'volume_percent', volume_percent)
