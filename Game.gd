@@ -12,6 +12,7 @@ onready var board_theme_button = $BoardThemeButton as Button
 
 const Piece = preload('res://Piece.tscn')
 const ToastText = preload('res://ToastText.tscn')
+const CenterDialog = preload('res://CenterDialog.tscn')
 
 var current_piece = null
 var score = 0
