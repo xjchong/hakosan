@@ -13,12 +13,10 @@ const SOUND_EFFECTS_BUS: String = 'SoundEffects'
 var _available_audio_players = []
 var _queue = []
 
-onready var _background_audio_player = $BackgroundAudio
-onready var _background_volume_tween = $BackgroundAudio/BackgroundVolumeTween as Tween
-
+@onready var _background_audio_player = $BackgroundAudio
 
 func _ready():
-	pause_mode = Node.PAUSE_MODE_PROCESS
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_volume_settings()
 	
 	for i in MAX_PLAYERS:
@@ -26,12 +24,12 @@ func _ready():
 		
 		add_child(audio_player)
 		_available_audio_players.append(audio_player)
-		audio_player.connect('finished', self, '_on_stream_finished', [audio_player])
+		audio_player.connect('finished', Callable(self, '_on_stream_finished').bind(audio_player))
 		audio_player.bus = SOUND_EFFECTS_BUS
 		
 		
 func _process(_delta):
-	if _queue.empty() or _available_audio_players.empty():
+	if _queue.is_empty() or _available_audio_players.is_empty():
 		return
 		
 	var next_audio_player = _available_audio_players.pop_front()
@@ -62,19 +60,20 @@ func end_loop():
 	if _background_audio_player.playing:
 		var current_volume_db = _background_audio_player.volume_db
 		
-		_background_volume_tween.interpolate_property(
-			_background_audio_player, 'volume_db', 
-			_background_audio_player.volume_db, -80, 4.0
+		var _background_volume_tween = create_tween().tween_property(
+			_background_audio_player,
+			'volume_db',
+			-80,
+			4.0
 		)
-		_background_volume_tween.start()
-		yield(_background_volume_tween, 'tween_completed')
+		await _background_volume_tween.tween_completed
 		_background_audio_player.stop()
 		_background_audio_player.stream = null
 		_background_audio_player.volume_db = current_volume_db
 		
 		
 func update_volume(bus: int, volume_percent: float):
-	AudioServer.set_bus_volume_db(bus, linear2db(volume_percent))
+	AudioServer.set_bus_volume_db(bus, linear_to_db(volume_percent))
 
 
 func _load_volume_settings():
@@ -88,10 +87,10 @@ func _load_volume_settings():
 	
 	AudioServer.set_bus_volume_db(
 		Bus.BACKGROUND, 
-		linear2db(background_volume_percent)
+		linear_to_db(background_volume_percent)
 	)
 	
 	AudioServer.set_bus_volume_db(
 		Bus.SOUND_EFFECTS, 
-		linear2db(sound_effects_volume_percent)
+		linear_to_db(sound_effects_volume_percent)
 	)

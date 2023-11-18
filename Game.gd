@@ -1,17 +1,16 @@
 class_name Game
 extends Node2D
 
-onready var board = $Board as Board
-onready var score_label = $ScoreLabel as Label
-onready var highscore_label = $HighscoreLabel as Label
-onready var game_over_label = $GameOverLabel as Label
-onready var recipe_overlay = $RecipeOverlay as RecipeOverlay
-onready var new_game_button = $NewGameButton as Button
-onready var undo_button = $UndoButton as Button
-onready var board_theme_button = $BoardThemeButton as Button
+@onready var board = $Board as Board
+@onready var score_label = $ScoreLabel as Label
+@onready var highscore_label = $HighscoreLabel as Label
+@onready var game_over_label = $GameOverLabel as Label
+@onready var recipe_overlay = $RecipeOverlay as RecipeOverlay
+@onready var new_game_button = $NewGameButton as Button
+@onready var undo_button = $UndoButton as Button
+@onready var board_theme_button = $BoardThemeButton as Button
 
 const Piece = preload('res://Piece.tscn')
-const ToastText = preload('res://ToastText.tscn')
 const CenterDialog = preload('res://CenterDialog.tscn')
 
 var current_piece = null
@@ -30,21 +29,21 @@ func _ready():
 		board.setup_pieces()
 		set_next_piece()
 
-	score_label.text = String(score)
+	score_label.text = str(score)
 
 	highscore = SettingsManager.load_setting('highscore', 'value', 0)
-	highscore_label.text = String(highscore)
+	highscore_label.text = str(highscore)
 
 	# Set the position of the game.
 	# warning-ignore:return_value_discarded
-	get_tree().get_root().connect('size_changed', self, '_recenter')
+	get_tree().get_root().connect('size_changed', Callable(self, '_recenter'))
 	_recenter()
 
-	new_game_button.connect('pressed', self, 'reset_game')
-	undo_button.connect('pressed', self, 'undo')
-	board.connect('mouse_entered', self, 'on_Board_mouse_entered')
-	board.connect('mouse_exited', self, 'on_Board_mouse_exited')
-	board_theme_button.connect('pressed', self, 'cycle_board_theme')
+	new_game_button.connect('pressed', Callable(self, 'reset_game'))
+	undo_button.connect('pressed', Callable(self, 'undo'))
+	board.connect('mouse_entered', Callable(self, 'on_Board_mouse_entered'))
+	board.connect('mouse_exited', Callable(self, 'on_Board_mouse_exited'))
+	board_theme_button.connect('pressed', Callable(self, 'cycle_board_theme'))
 
 	undo_button.visible = SaveManager.does_save_exist('undo')
 
@@ -88,7 +87,7 @@ func _input(event):
 			recipe_overlay.clear_recipe()
 			
 	elif event is InputEventMouseButton:
-		if event.button_index == BUTTON_RIGHT and not event.pressed:
+		if event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
 			var stored_piece_type = board.store_piece(current_piece.type, board.storage_positions[0])
 			
 			if stored_piece_type != 'error':
@@ -99,7 +98,7 @@ func _input(event):
 				set_next_piece()
 			else:
 				set_next_piece(stored_piece_type)
-		if event.button_index == BUTTON_LEFT and not event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 			var action_type = board.get_action_type(current_piece.type if current_piece else null)
 
 			handle_touchscreen_auto_placement()
@@ -160,19 +159,19 @@ func _input(event):
 
 func increase_score(value):
 	score += value
-	score_label.text = String(score)
+	score_label.text = str(score)
 
 
 func decrease_score(value):
 	score -= value
-	score_label.text = String(score)
+	score_label.text = str(score)
 
 
 func set_next_piece(type = get_next_piece_type()):
 	if type == null:
 		type = get_next_piece_type()
 
-	var piece = Piece.instance()
+	var piece = Piece.instantiate()
 	piece.position = get_global_mouse_position()
 	add_child(piece)
 	piece.set_type(type)
@@ -277,14 +276,14 @@ func undo():
 	SaveManager.load_game(self, 'undo')
 	SaveManager.save_game(self)
 	SaveManager.delete_save('undo')
-	score_label.text = String(score)
+	score_label.text = str(score)
 	undo_button.visible = false
 	handle_game_over()
 	handle_touchscreen_auto_placement()
 
 
 func handle_touchscreen_auto_placement():
-	if OS.has_touchscreen_ui_hint():
+	if DisplayServer.is_touchscreen_available():
 		var closest_playable_position = board.get_closest_playable_position(current_piece.type)
 		current_piece.position = board.get_position_from_board_position(closest_playable_position)
 		current_piece.visible = true

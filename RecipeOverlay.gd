@@ -58,7 +58,7 @@ func show_recipe(type):
 
 
 func instance_piece(type, position):
-	var piece = Piece.instance()
+	var piece = Piece.instantiate()
 	add_child(piece)
 	piece.scale = PIECE_SCALE
 	piece.set_type(type)

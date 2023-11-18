@@ -1,0 +1,13 @@
+res://default_env.tres
+res://Game.tscn
+res://themes/ui_theme.tres
+res://Piece.gd
+res://Piece.tscn
+res://autoload/SaveManager.gd
+res://ToastText.tscn
+res://ToastText.gd
+res://Game.gd
+res://autoload/AudioManager.tscn
+res://autoload/AudioManager.gd
+res://VolumeControl.tscn
+res://VolumeControl.gd

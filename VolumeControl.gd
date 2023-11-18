@@ -1,9 +1,8 @@
 extends Control
 
 
-onready var label = $Label as Label
-onready var slider = $Slider as HSlider
-onready var tween = $Tween as Tween
+@onready var label = $Label as Label
+@onready var slider = $Slider as HSlider
 
 var is_value_set_initially = false
 
@@ -26,12 +25,9 @@ func _on_Slider_value_changed(value):
 
 
 func _on_MouseArea_mouse_entered():
-	tween.remove_all()
-	tween.interpolate_property(slider, 'modulate:a', slider.modulate.a, 1, 0.1)
-	tween.start()
+	create_tween().tween_property(slider, 'modulate:a', 1, 0.1)
 
 
 func _on_MouseArea_mouse_exited():
-	tween.remove_all()
-	tween.interpolate_property(slider, 'modulate:a', 1, 0, 0.3, 0, 2, 0.5)
-	tween.start()
+	create_tween().tween_property(slider, 'modulate:a', 0, 0.2).set_delay(0.5)
+	

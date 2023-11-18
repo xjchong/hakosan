@@ -13,7 +13,6 @@ func save_game(game: Game, name = 'game'):
 	if does_save_exist(name):
 		delete_save(name)
 
-	var save_file = File.new()
 	var rows = game.board.rows
 	var columns = game.board.columns
 	var board = []
@@ -42,28 +41,28 @@ func save_game(game: Game, name = 'game'):
 		'current_piece_type': null if game.current_piece == null else game.current_piece.type,
 		'turn': game.turn,
 		'score': game.score,
-		'game_rng_seed': String(game.rng.seed), # Long integers are converted to string, because parsing converts ints to float. Rounding errors!
-		'game_rng_state': String(game.rng.state),
-		'board_rng_seed': String(game.board.rng.seed),
-		'board_rng_state': String(game.board.rng.state),
+		'game_rng_seed': str(game.rng.seed), # Long integers are converted to string, because parsing converts ints to float. Rounding errors!
+		'game_rng_state': str(game.rng.state),
+		'board_rng_seed': str(game.board.rng.seed),
+		'board_rng_state': str(game.board.rng.state),
 	}
 
-	save_file.open(get_save_file_path(name), File.WRITE)
-	save_file.store_line(to_json(data))
+	var save_file = FileAccess.open(get_save_file_path(name), FileAccess.WRITE)
+	save_file.store_line(JSON.stringify(data))
 	save_file.close()
 
 
 # Loads save data into the given game.
 func load_game(game: Game, name = 'game'):
-	var save_file = File.new()
 	var path = get_save_file_path(name)
 
-	if not save_file.file_exists(path):
+	if not FileAccess.file_exists(path):
 		return null
 
-	save_file.open(path, File.READ)
-
-	var data = parse_json(save_file.get_line())
+	var save_file = FileAccess.open(path, FileAccess.READ)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(save_file.get_line())
+	var data = test_json_conv.get_data()
 
 	if data['save_version'] == 0:
 		upgrade_v0(data)
@@ -107,16 +106,12 @@ func load_game(game: Game, name = 'game'):
 
 
 func delete_save(name):
-	var directory = Directory.new()
 	var path = get_save_file_path(name)
-
-	directory.remove(path)
+	DirAccess.remove_absolute(path)
 
 
 func does_save_exist(name):
-	var save_file = File.new()
-
-	return save_file.file_exists(get_save_file_path(name))
+	return FileAccess.file_exists(get_save_file_path(name))
 
 
 func get_save_file_path(name):

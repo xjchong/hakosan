@@ -4,8 +4,8 @@ extends Node2D
 signal mouse_entered
 signal mouse_exited
 
-onready var board_sprite = $BoardSprite as AnimatedSprite
-onready var control = $Control as Control
+@onready var board_sprite = $BoardSprite as AnimatedSprite2D
+@onready var control = $Control as Control
 
 const Piece = preload('res://Piece.tscn')
 const PieceCompanion = preload('res://Piece.gd')
@@ -42,8 +42,8 @@ func _ready():
 	
 	set_theme(SettingsManager.load_setting('theme', 'board', 0))
 
-	control.connect('mouse_entered', self, '_on_Control_mouse_entered')
-	control.connect('mouse_exited', self, '_on_Control_mouse_exited')
+	control.connect('mouse_entered', Callable(self, '_on_Control_mouse_entered'))
+	control.connect('mouse_exited', Callable(self, '_on_Control_mouse_exited'))
 
 
 func _on_Control_mouse_entered():
@@ -138,7 +138,7 @@ func _place_piece(type: String, turn: int, position: Vector2):
 		current_piece.queue_free()
 		board[position.x][position.y] = null
 
-	var new_piece = Piece.instance()
+	var new_piece = Piece.instantiate()
 	new_piece.position = get_position_from_board_position(position)
 	add_child(new_piece)
 	new_piece.set_type(type)
@@ -180,7 +180,7 @@ func meld_at_position(position, turn, should_fx = true):
 
 
 func toast(text, position):
-	var toast_text = ToastText.instance()
+	var toast_text = ToastText.instantiate()
 	var offset = Vector2.UP * int(PIECE_SIZE / 2.0)
 	toast_text.text = text
 	toast_text.position = get_position_from_board_position(position) + offset
@@ -197,7 +197,7 @@ func store_piece(type, position = get_mouse_to_board_position()):
 		old_stored_piece_type = stored_piece.type
 		stored_piece.queue_free()
 
-	stored_piece = Piece.instance()
+	stored_piece = Piece.instantiate()
 	stored_piece.position = position + PIECE_OFFSET
 	stored_piece.scale = Vector2(0.9, 0.9)
 	add_child(stored_piece)

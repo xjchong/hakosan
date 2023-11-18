@@ -1,17 +1,15 @@
 class_name Piece
 extends Node2D
 
-onready var label = $Label as Label
-onready var appearance = $AppearanceSprite as AnimatedSprite
-onready var highlight_rect = $HighlightRect as ColorRect
-onready var tween_pulse = $TweenPulse as Tween
-onready var tween_move = $TweenMove as Tween
-onready var tween_meld = $TweenMeld as Tween
-onready var animation_player = $AnimationPlayer as AnimationPlayer
+@onready var label = $Label as Label
+@onready var appearance = $AppearanceSprite as AnimatedSprite2D
+@onready var highlight_rect = $HighlightRect as ColorRect
+@onready var animation_player = $AnimationPlayer as AnimationPlayer
 
 var type = 'unknown'
 var turn = 0
 var pulse_positions = null
+var tween_pulse: Tween = null
 
 
 static func get_value_for_type(_type):
@@ -47,11 +45,6 @@ static func get_value_for_type(_type):
 	return value_for_type.get(_type, 0)
 
 
-func _ready():
-	tween_pulse.connect('tween_all_completed', self, 'play_tween_pulse')
-	tween_meld.connect('tween_all_completed', self, 'queue_free')
-
-
 func set_type(new_type):
 	type = new_type
 	set_appearance()
@@ -59,7 +52,7 @@ func set_type(new_type):
 
 func set_turn(new_turn):
 	turn = new_turn
-	label.text = String(new_turn)
+	label.text = str(new_turn)
 
 
 func highlight():
@@ -76,8 +69,8 @@ func pulse_on(towards_position):
 
 
 func pulse_off():
-	tween_pulse.stop(self)
-
+	if tween_pulse:
+		tween_pulse.stop()
 	if pulse_positions != null:
 		position = pulse_positions[0]
 
@@ -85,21 +78,26 @@ func pulse_off():
 func play_tween_pulse():
 	var from = pulse_positions[0] if position == pulse_positions[0] else pulse_positions[1]
 	var to = pulse_positions[1] if position == pulse_positions[0] else pulse_positions[0]
-
-	tween_pulse.interpolate_property(self, 'position', from, to, 0.25)
-	tween_pulse.start()
+	
+	tween_pulse = create_tween()
+	await tween_pulse.tween_property(self, 'position', to, 0.25).from(from).finished
+	play_tween_pulse()
 
 
 func move(to):
-	tween_move.interpolate_property(self, 'position', position, to, 0.3)
-	tween_move.start()
+	create_tween().tween_property(self, 'position', to, 0.3)
 
 
 func meld(to, should_fx = true):
 	if should_fx:
-		tween_meld.interpolate_property(self, 'position', position, to, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN)
-		tween_meld.interpolate_property(self, 'modulate', Color(1, 1, 1, 1), Color(1, 1, 1, 0), 0.1)
-		tween_meld.start()
+		var tween_meld = create_tween()
+		(tween_meld.tween_property(self, 'position', to, 0.1)
+			.set_trans(Tween.TRANS_LINEAR)
+			.set_ease(Tween.EASE_IN))
+		(tween_meld.tween_property(self, 'modulate', Color(1, 1, 1, 0), 0.1)
+			.from(Color(1, 1, 1, 1)))
+		await tween_meld.finished
+		queue_free()
 	else:
 		queue_free()
 

@@ -1,29 +1,29 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://d1ty7l03extev"]
 
-[ext_resource path="res://fonts/Minecraft.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://ToastText.gd" type="Script" id=2]
+[ext_resource type="FontFile" uid="uid://dx3tric7vk3wn" path="res://fonts/Minecraft.ttf" id="1"]
+[ext_resource type="Script" path="res://ToastText.gd" id="2"]
 
-[sub_resource type="DynamicFont" id=1]
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[sub_resource type="Theme" id=2]
-default_font = SubResource( 1 )
+[sub_resource type="Theme" id="2"]
+default_font = SubResource("1")
 
 [node name="ToastText" type="Node2D"]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Label" type="Label" parent="."]
-margin_left = -89.0
-margin_top = -15.0
-margin_right = 1.0
-margin_bottom = 1.0
+offset_left = -89.0
+offset_top = -15.0
+offset_right = 1.0
+offset_bottom = 1.0
 grow_horizontal = 2
-rect_scale = Vector2( 2, 2 )
-theme = SubResource( 2 )
+scale = Vector2(2, 2)
+theme = SubResource("2")
 text = "Placeholder"
-align = 1
-valign = 1
-
-[node name="Tween" type="Tween" parent="."]
